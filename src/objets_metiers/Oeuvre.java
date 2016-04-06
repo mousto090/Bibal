@@ -1,6 +1,6 @@
 package objets_metiers;
 
-import BibalExceptions.BibalExceptions;
+import Utility.BibalExceptions;
 import Utility.DBConnection;
 import static Utility.Utility.closeStatement;
 import static Utility.Utility.closeStatementResultSet;
@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Vector;
+import java.util.stream.Stream;
 
 public class Oeuvre {
 
@@ -18,7 +19,7 @@ public class Oeuvre {
     protected String auteur;
     protected String categorie;
     protected int nbResa;
-    protected Vector<Examplaire> examplairesOeuvre = new Vector<>();
+    protected Vector<Exemplaire> examplairesOeuvre = new Vector<>();
     protected Vector<Reservation> reservationsOeuvre = new Vector<>();
 
     public int getId() {
@@ -87,22 +88,36 @@ public class Oeuvre {
     public void setNbResa(int nbResa) {
         this.nbResa = nbResa;
     }
-    
-    public void ajouter(Oeuvre oeuvre) throws BibalExceptions{
+
+    //Verifie si l'oeuvre n'est pas déjà ajoutée
+    // c'est-à-dire la même oeuvre avec le même auteur
+    private boolean oeuvreExiste(Oeuvre oeuvre) throws BibalExceptions {
+        ArrayList<Oeuvre> oeuvres = findByTitre(oeuvre.getTitre());
+        if (oeuvres.isEmpty()) {
+            return false;
+        }
+        Stream<Oeuvre> filterOeuvre
+                = oeuvres.stream().filter((oeuvre1) -> (oeuvre.getTitre().equals(oeuvre1.getTitre())
+                        && oeuvre.getAuteur().equals(oeuvre1.getAuteur())));
+        return filterOeuvre.findFirst().isPresent();
+    }
+
+    public void ajouter(Oeuvre oeuvre) throws BibalExceptions {
+
+        if (oeuvreExiste(oeuvre)) {
+            throw new BibalExceptions("Cette oeuvre est déjà ajoutée");
+        }
         final String SQL_INSERT = "INSERT INTO oeuvre "
-            + "(Titre, Auteur, Categorie, NbResa, Lending,TypeOeuvre ) "
-            + "VALUES (?, ?, ?, ?, ?, ?)";
+                + "(Titre, Auteur, Categorie, NbResa, Lending,TypeOeuvre ) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement = null;
         try {
 
             String typeOeuvre = oeuvre.getClass().getSimpleName();
-            int lending;
+            int lending = 10;
             if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
-                lending = ((Magazine) oeuvre).getLending();
-            } else {
-                lending = ((Livre) oeuvre).getLending();
+                lending = 30;
             }
-
             preparedStatement = initialiseRequetePreparee(DBConnection.getConnection(), SQL_INSERT,
                     oeuvre.getTitre(), oeuvre.getAuteur(),
                     oeuvre.getCategorie(), oeuvre.getNbResa(),
@@ -118,11 +133,11 @@ public class Oeuvre {
             closeStatement(preparedStatement);
         }
     }
-    
+
     public void modifier(Oeuvre oeuvre) throws BibalExceptions {
         final String SQL_UPDATE = "UPDATE oeuvre "
-            + " SET Titre = ?, Auteur = ?, Categorie = ?, NbResa = ?, Lending = ?,TypeOeuvre = ? "
-            + "WHERE id = ?";
+                + " SET Titre = ?, Auteur = ?, Categorie = ?, NbResa = ?, Lending = ?,TypeOeuvre = ? "
+                + "WHERE id = ?";
         PreparedStatement preparedStatement = null;
         try {
             int lending;
@@ -148,10 +163,12 @@ public class Oeuvre {
             closeStatement(preparedStatement);
         }
     }
+
     /**
      * Retourne la liste de toutes les oeuvres
+     *
      * @return
-     * @throws BibalExceptions 
+     * @throws BibalExceptions
      */
     public ArrayList<Oeuvre> getAll() throws BibalExceptions {
         final String SQL_SELECT = "SELECT * FROM oeuvre ORDER BY id";
@@ -160,24 +177,55 @@ public class Oeuvre {
 
     /**
      * Rechercher une oeuvre par id
+     *
      * @param id
      * @return
-     * @throws BibalExceptions 
+     * @throws BibalExceptions
      */
     public Oeuvre findById(int id) throws BibalExceptions {
         final String SQL_SELECT_BY_ID = "SELECT * FROM oeuvre WHERE id = ?";
-        return find(SQL_SELECT_BY_ID, id).get(0);
+        ArrayList<Oeuvre> oeuvres = find(SQL_SELECT_BY_ID, id);
+        return oeuvres.isEmpty() ? null : oeuvres.get(0);
     }
 
-    /**
-     * Rechercher les oeuvres par type
-     * @param titre  : Magazine ou Livre
-     * @return
-     * @throws BibalExceptions 
-     */
+//    public static Oeuvre findByTitre(String titre) throws BibalExceptions {
+//        final String SQL_SELECT_BY_TITRE_OEUVRE = "SELECT * FROM oeuvre WHERE titre = ?";
+//        ArrayList<Oeuvre> oeuvres = find(SQL_SELECT_BY_TITRE_OEUVRE, titre);
+//        return oeuvres.isEmpty() ? null : oeuvres.get(0);
+//    }
     public ArrayList<Oeuvre> findByTitre(String titre) throws BibalExceptions {
         final String SQL_SELECT_BY_TITRE_OEUVRE = "SELECT * FROM oeuvre WHERE titre = ?";
-        return find(SQL_SELECT_BY_TITRE_OEUVRE, titre);
+        ArrayList<Oeuvre> oeuvres = find(SQL_SELECT_BY_TITRE_OEUVRE, titre);
+        return oeuvres.isEmpty() ? null : oeuvres;
+    }
+
+    //trouver les oeuvres dont aucun exemplaire n'est disponible
+    /**
+     * Vérifie si l'oeuvre n'a aucun examplaire disponible, 
+     * si oui elle peut donc être réservée
+     *
+     * 
+     * @return true si on peut la réservée
+     *         false sinon
+     * @throws BibalExceptions
+     */
+    public boolean estReservable() throws BibalExceptions {
+        final String SQL_SELECT_OEUVRE_SANS_EXEMP = "SELECT * FROM oeuvre o"
+                + " WHERE o.id NOT IN ( "
+                + "    SELECT e.oeuvreID FROM exemplaire e"
+                + "    LEFT JOIN emprunt emp"
+                + "    ON e.id = emp.exemplaireID"
+                + "    WHERE emp.ExemplaireID IS NULL"
+                + "    OR dateRetourEffective IS NOT NULL"
+                + "    ORDER BY e.id)";
+        ArrayList<Oeuvre> oeuvres = find(SQL_SELECT_OEUVRE_SANS_EXEMP, new Object[0]);
+        if (oeuvres.isEmpty()) {
+            return false;
+        }
+        Stream<Oeuvre> filterOeuvre
+                = oeuvres.stream().filter((oeuvre1) -> (this.getId() == oeuvre1.getId()));
+                        
+        return filterOeuvre.findFirst().isPresent();
     }
 
     private ArrayList<Oeuvre> find(String sql, Object... objets) throws BibalExceptions {
@@ -192,13 +240,11 @@ public class Oeuvre {
                 listOeuvres.add(mappingUsager(resultSet));
             }
         } catch (SQLException e) {
-            throw new BibalExceptions("Aucun enregistrement trouvé " + e.getMessage());
+            throw new BibalExceptions("Aucune oeuvre trouvée " + e.getMessage());
         } finally {
             closeStatementResultSet(preparedStatement, resultSet);
         }
-        if (listOeuvres.isEmpty()) {
-            throw new BibalExceptions("Aucun enregistrement trouvé ");
-        }
+
         return listOeuvres;
     }
 
@@ -224,14 +270,9 @@ public class Oeuvre {
         return oeuvre;
     }
 
-
     @Override
     public String toString() {
         return "id=" + id + ", titre=" + titre + ", auteur=" + auteur + ", categorie=" + categorie + ", nbResa=" + nbResa + " ";
     }
 
-    
-
-    
-    
 }

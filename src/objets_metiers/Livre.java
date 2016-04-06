@@ -1,26 +1,27 @@
 package objets_metiers;
 
-import BibalExceptions.BibalExceptions;
+import Utility.BibalExceptions;
 
 public class Livre extends Oeuvre {
 
     private int lending;
 
     public Livre() {
+        this.lending = 10;
+        this.nbResa = 0;
     }
     
-    public Livre(String titre, String auteur, String categorie, int lending) {
+    public Livre(String titre, String auteur, String categorie) {
+        this();
         this.titre = titre;
         this.auteur = auteur;
         this.categorie = categorie;
-        this.lending = lending;
-        this.nbResa = 0;
     }
     
-    public Livre(int id, String titre, String auteur, String categorie, int lending) {
-        this(titre, auteur, categorie, lending);
+    public Livre(int id, String titre, String auteur, String categorie, int nbResa) {
+        this(titre, auteur, categorie);
         this.id = id;
-        this.nbResa = 0;
+        this.nbResa = nbResa;
     }
         
     public int getLending() {

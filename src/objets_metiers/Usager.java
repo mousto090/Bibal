@@ -1,6 +1,6 @@
 package objets_metiers;
 
-import BibalExceptions.BibalExceptions;
+import Utility.BibalExceptions;
 import Utility.DBConnection;
 import static Utility.Utility.closeStatement;
 import static Utility.Utility.closeStatementResultSet;
@@ -153,7 +153,7 @@ public class Usager {
         try {
             String formatedDateNais = dateToStr(usager.getDateNais());
             preparedStatement = initialiseRequetePreparee(DBConnection.getConnection(), SQL_INSERT,
-                    usager.getNom(), usager.getPrenom(),
+                    usager.getNom().toUpperCase(), usager.getPrenom(),
                     formatedDateNais, usager.getSexe(),
                     usager.getAdresse(), usager.getTel());
             int statut = preparedStatement.executeUpdate();
@@ -176,7 +176,7 @@ public class Usager {
         try {
             String formatedDateNais = dateToStr(usager.getDateNais());
             preparedStatement = initialiseRequetePreparee(DBConnection.getConnection(), SQL_UPDATE,
-                    usager.getNom(), usager.getPrenom(),
+                    usager.getNom().toUpperCase(), usager.getPrenom(),
                     formatedDateNais, usager.getSexe(),
                     usager.getAdresse(), usager.getTel(),
                     usager.getId());
@@ -190,8 +190,8 @@ public class Usager {
             closeStatement(preparedStatement);
         }
     }
-    
-    public void delete(Usager usager) throws BibalExceptions{
+
+    public void delete(Usager usager) throws BibalExceptions {
         final String SQL_DELETE_BY_ID = "DELETE FROM usager WHERE id = ? ";
         PreparedStatement preparedStatement = null;
         try {
@@ -203,35 +203,41 @@ public class Usager {
             }
         } catch (SQLException | BibalExceptions e) {
             throw new BibalExceptions("Erreurs lors de la suppression de l'usager ", e.getCause());
-        }finally {
+        } finally {
             closeStatement(preparedStatement);
         }
     }
+
     /**
      * Methode qui donnne la liste de tous les usagers
+     *
      * @return
-     * @throws BibalExceptions 
+     * @throws BibalExceptions
      */
     public ArrayList<Usager> getAll() throws BibalExceptions {
         final String SQL_SELECT = "SELECT * FROM usager ORDER BY id";
         return find(SQL_SELECT, new Object[0]);
     }
+
     /**
      * Chercher un usager par id
+     *
      * @param id
      * @return
-     * @throws BibalExceptions 
+     * @throws BibalExceptions
      */
     public Usager findById(int id) throws BibalExceptions {
         final String SQL_SELECT_BY_ID = "SELECT * FROM usager WHERE id = ?";
-        return find(SQL_SELECT_BY_ID, id).get(0);
+        ArrayList<Usager> usagers = find(SQL_SELECT_BY_ID, id);
+        return usagers.isEmpty() ? null : usagers.get(0);
     }
-    
+
     /**
      * Chercher les usager par nom
+     *
      * @param nom
      * @return
-     * @throws BibalExceptions 
+     * @throws BibalExceptions
      */
     public ArrayList<Usager> findByNom(String nom) throws BibalExceptions {
         final String SQL_SELECT_BY_NOM = "SELECT * FROM usager WHERE Nom = ?";
@@ -254,15 +260,12 @@ public class Usager {
         } finally {
             closeStatementResultSet(preparedStatement, resultSet);
         }
-        
-        if(listUsagers.isEmpty()){
-            throw new BibalExceptions("Aucun enregistrement trouvé ");
-        }
+
         return listUsagers;
     }
 
     private static Usager mappingUsager(ResultSet resultSet) throws SQLException {
-        
+
         Usager usager = new Usager();
         try {
             usager.setId(resultSet.getInt("id"));
@@ -277,7 +280,7 @@ public class Usager {
         }
         return usager;
     }
-    
+
     @Override
     public String toString() {
         return "Usager{" + "id=" + id + ", nom=" + nom + ", prenom=" + prenom

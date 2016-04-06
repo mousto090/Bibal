@@ -3,27 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package BibalExceptions;
+package Utility;
 
 /**
  *
  * @author Jalloh
  */
-public class ChampsControlExceptions extends Exception{
+public class BibalExceptions extends Exception{
 
-    public ChampsControlExceptions(String message) {
+    public BibalExceptions(String message) {
         super(message);
+        //JOptionPane.showMessageDialog(null, message, "Erreurs", JOptionPane.ERROR_MESSAGE);
     }
-
-    public ChampsControlExceptions(Throwable cause) {
+    
+    public BibalExceptions(Throwable cause) {
         super(cause);
     }
-
-    public ChampsControlExceptions(String message, Throwable cause) {
+    
+    public BibalExceptions(String message, Throwable cause) {
         super(message, cause);
     }
     
     
-    
-   
 }

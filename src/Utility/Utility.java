@@ -5,29 +5,20 @@
  */
 package Utility;
 
-import BibalExceptions.BibalExceptions;
-import BibalExceptions.ChampsControlExceptions;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.Locale;
 
 /**
  *
  * @author Jalloh
  */
 public final class Utility {
-
-    public static final String DATE_FORMAT_YMD = "yyyy-mm-dd";
-    public static final String DATE_FORMAT_DMY = "dd/mm/yyyy";
-
     /**
      * Fermeture du ResultSet
      *
@@ -107,9 +98,9 @@ public final class Utility {
     }
 
     /**
-     * Méthode utilitaire de conversion d'une chaine en format date dd/mm/yyyy
+     * Méthode utilitaire de conversion d'une chaine en  date 
      * en Date
-     * @param dateNais en format dd/mm/yyyy
+     * @param dateNais en format dd/MM/yyyy
      * @return
      * @throws BibalExceptions
      */
@@ -117,7 +108,7 @@ public final class Utility {
 
         if (null != dateNais) {
             try {
-                return new SimpleDateFormat(DATE_FORMAT_DMY).parse(dateNais);
+                return new SimpleDateFormat("dd/MM/yyyy").parse(dateNais);
             } catch (ParseException e) {
                 throw new BibalExceptions("Date non valide ", e.getCause());
             }
@@ -127,13 +118,13 @@ public final class Utility {
     }
 
     /**
-     * Méthode utilitaire de conversion d'une date en format string yyyy-mm-dd
+     * Méthode utilitaire de conversion d'une date en format  yyyy-MM-dd
      *
-     * @param date
-     * @return
+     * @param date date à convertir
+     * @return date au format yyyy-mm-dd
      */
     public static String dateToStr(Date date) {
-        return new SimpleDateFormat(DATE_FORMAT_YMD).format(date);
+        return new SimpleDateFormat("yyyy-MM-dd").format(date);
     }
     
     public static String YMDtoDMY(String dateFormatYMD) {

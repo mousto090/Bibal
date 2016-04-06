@@ -1,26 +1,27 @@
 package objets_metiers;
 
-import BibalExceptions.BibalExceptions;
+import Utility.BibalExceptions;
 
 public class Magazine extends Oeuvre {
 
     private int lending;
 
     public Magazine() {
+        this.lending = 30;
+        this.nbResa = 0;
     }
-    
-    public Magazine(String titre, String auteur, String categorie, int lending) {
+
+    public Magazine(String titre, String auteur, String categorie) {
+        this();
         this.titre = titre;
         this.auteur = auteur;
         this.categorie = categorie;
-        this.lending = lending;
-        this.nbResa = 0;
     }
-    
-    public Magazine(int id, String titre, String auteur, String categorie, int lending) {
-        this(titre, auteur, categorie, lending);
+
+    public Magazine(int id, String titre, String auteur, String categorie, int nbResa) {
+        this(titre, auteur, categorie);
         this.id = id;
-        this.nbResa = 0;
+        this.nbResa = nbResa;
     }
 
     public int getLending() {
@@ -39,6 +40,5 @@ public class Magazine extends Oeuvre {
     public String toString() {
         return "MAGAZINE{" + super.toString() + "lending=" + lending + '}';
     }
-    
-    
+
 }

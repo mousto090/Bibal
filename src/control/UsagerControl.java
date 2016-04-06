@@ -1,51 +1,40 @@
 package control;
 
-import BibalExceptions.BibalExceptions;
+import Utility.BibalExceptions;
 import java.util.ArrayList;
-import java.util.Date;
 import objets_metiers.Usager;
 
 public class UsagerControl {
 
-    public void ajouter(String nom, String prenom, Date dateNais, String sexe,
-            String adresse, String tel) throws BibalExceptions {
+    public static void ajouter(Usager usager) throws BibalExceptions {
+        //Verifier la validité des informations
+        usager.setNom(usager.getNom());
+        usager.setPrenom(usager.getPrenom());
+        usager.setDateNais(usager.getDateNais());
+        usager.setSexe(usager.getSexe());
+        usager.setAdresse(usager.getAdresse());
+        usager.setTel(usager.getTel());
 
-        try {
-            Usager usager = new Usager();
-            usager.setNom(nom);
-            usager.setPrenom(prenom);
-            usager.setDateNais(dateNais);
-            usager.setSexe(sexe);
-            usager.setAdresse(adresse);
-            usager.setTel(tel);
-
-            usager.ajouter(usager);
-
-        } catch (BibalExceptions e) {
-            throw new BibalExceptions(e.getMessage());
-        }
+        usager.ajouter(usager);
     }
 
-    public void modifier(int id, String nom, String prenom, Date dateNais, String sexe,
-            String adresse, String tel) throws BibalExceptions {
-
-        Usager usager = new Usager();
-        usager.setId(id);
-        usager.setNom(nom);
-        usager.setPrenom(prenom);
-        usager.setDateNais(dateNais);
-        usager.setSexe(sexe);
-        usager.setAdresse(adresse);
-        usager.setTel(tel);
+    public static void modifier(Usager usager) throws BibalExceptions {
+        //Verifier que les informations sont valides
+        usager.setNom(usager.getNom());
+        usager.setPrenom(usager.getPrenom());
+        usager.setDateNais(usager.getDateNais());
+        usager.setSexe(usager.getSexe());
+        usager.setAdresse(usager.getAdresse());
+        usager.setTel(usager.getTel());
 
         usager.modifier(usager);
     }
 
-    public Usager findById(int id) throws BibalExceptions {
+    public static Usager findById(int id) throws BibalExceptions {
         return new Usager().findById(id);
     }
 
-    public ArrayList<Usager> findByNom(String nom) throws BibalExceptions {
+    public static ArrayList<Usager> findByNom(String nom) throws BibalExceptions {
         return new Usager().findByNom(nom);
     }
 }

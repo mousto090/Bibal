@@ -1,59 +1,37 @@
 package control;
 
-import BibalExceptions.BibalExceptions;
-import objets_metiers.Magazine;
-import objets_metiers.Livre;
+import Utility.BibalExceptions;
 import java.util.ArrayList;
 import objets_metiers.Oeuvre;
 
 public class OeuvreControl {
 
-    public void ajouter(String titre, String auteur, String categorie, int lending,
-            String typeOeuvre) throws BibalExceptions {
+    public static void ajouter(Oeuvre oeuvre) throws BibalExceptions {
+        //Verifier la validité des informations
+        oeuvre.setTitre(oeuvre.getTitre());
+        oeuvre.setAuteur(oeuvre.getAuteur());
+        oeuvre.setCategorie(oeuvre.getCategorie());
 
-        Oeuvre oeuvre;
-
-        if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
-            oeuvre = new Magazine();
-            ((Magazine) oeuvre).setLending(lending);
-        } else {
-            oeuvre = new Livre();
-            ((Livre) oeuvre).setLending(lending);
-        }
-        oeuvre.setTitre(titre);
-        oeuvre.setAuteur(auteur);
-        oeuvre.setCategorie(categorie);
         oeuvre.ajouter(oeuvre);
     }
 
-    public void modifier(int id, String titre, String auteur, String categorie,
-            int lending, int nbResa, String typeOeuvre) throws BibalExceptions {
-
-        Oeuvre oeuvre;
-        if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
-            oeuvre = new Magazine();
-            ((Magazine) oeuvre).setLending(lending);
-        } else {
-            oeuvre = new Livre();
-            ((Livre) oeuvre).setLending(lending);
-        }
-
-        oeuvre.setId(id);
-        oeuvre.setTitre(titre);
-        oeuvre.setAuteur(auteur);
-        oeuvre.setCategorie(categorie);
-        oeuvre.setNbResa(nbResa);
+    public static void modifier(Oeuvre oeuvre) throws BibalExceptions {
+        oeuvre.setId(oeuvre.getId());
+        oeuvre.setTitre(oeuvre.getTitre());
+        oeuvre.setAuteur(oeuvre.getAuteur());
+        oeuvre.setCategorie(oeuvre.getCategorie());
+        oeuvre.setNbResa(oeuvre.getNbResa());
 
         oeuvre.modifier(oeuvre);
     }
 
-    public Oeuvre findById(int id) throws BibalExceptions {
+    public static Oeuvre findById(int id) throws BibalExceptions {
         Oeuvre oeuvre = new Oeuvre();
         return oeuvre.findById(id);
     }
 
-    public ArrayList<Oeuvre> findByTitre(String titre) throws BibalExceptions {
-        Oeuvre oeuvre = new Oeuvre();
-        return oeuvre.findByTitre(titre);
+    public static ArrayList<Oeuvre> findByTitre(String titre) throws BibalExceptions {
+        //Oeuvre oeuvre = new Oeuvre();
+        return new Oeuvre().findByTitre(titre);
     }
 }

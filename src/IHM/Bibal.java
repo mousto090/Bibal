@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bibal;
+package IHM;
 
 import Utility.BibalExceptions;
-import control.EmpruntControl;
+import static Utility.Utility.formatDate;
+import control.UsagerControl;
 import objets_metiers.Livre;
 import objets_metiers.Magazine;
+import objets_metiers.Usager;
 
 /**
  *
@@ -76,7 +78,7 @@ public class Bibal {
 //                ExemplaireControl.findExemplaireDispo(new Livre(12,"Magazine 4", "Auteur 1", "Categorie 1", 2)));
 //        System.out.println("bibal.Bibal.main()" + ExemplaireControl.findById(6));
 //        ================ Test Emprunt ===========
-        EmpruntControl.emprunter(1, "Magazine 3");
+       // EmpruntControl.emprunter(1, "Magazine 3");
 //        EmpruntControl.emprunter(3, "Magazine 4");
 //        Oeuvre o = new Livre(1, "Magazine 1", "Auteur 1", "Categorie 1", 2);
 //        System.out.println("bibal.Bibal.main()" + o.estReservable());

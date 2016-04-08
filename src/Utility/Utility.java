@@ -90,7 +90,9 @@ public final class Utility {
      * @throws SQLException
      */
     public static PreparedStatement initialiseRequetePreparee(Connection connexion, String sql, Object... objets) throws SQLException {
-        PreparedStatement preparedStatement = connexion.prepareStatement(sql);
+        PreparedStatement preparedStatement = connexion.prepareStatement(sql,
+                ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_UPDATABLE);
         for (int i = 0; i < objets.length; i++) {
             preparedStatement.setObject(i + 1, objets[i]);
         }
@@ -124,7 +126,17 @@ public final class Utility {
      * @return date au format yyyy-mm-dd
      */
     public static String dateToStr(Date date) {
+        if(null == date){
+            return null;
+        }
         return new SimpleDateFormat("yyyy-MM-dd").format(date);
+    }
+    
+    public static String dateToStrYMD(Date date) {
+        if(null == date){
+            return null;
+        }
+        return new SimpleDateFormat("yyyy/MM/dd").format(date);
     }
     
     public static String YMDtoDMY(String dateFormatYMD) {

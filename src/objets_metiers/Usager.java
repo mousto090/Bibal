@@ -119,9 +119,9 @@ public class Usager {
 
     public void setAdresse(String adresse) throws BibalExceptions {
         if (null != adresse) {
-            if (adresse.length() < 10) {
+            if (adresse.length() < 5) {
                 throw new BibalExceptions("L'adresse doit contenir "
-                        + "au moins 10 caractères" + adresse);
+                        + "au moins 10 caractères");
             }
         } else {
             throw new BibalExceptions("Merci de renseigner l'adresse de l'usager");

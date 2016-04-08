@@ -3,14 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/MOUSTAPHA/MASTER/UML_Loria/NetBeansWorkspace/Bibal1/src/control/EmpruntControl.java</file>
-            <file>file:/D:/MOUSTAPHA/MASTER/UML_Loria/NetBeansWorkspace/Bibal1/src/objets_metiers/Oeuvre.java</file>
-            <file>file:/D:/MOUSTAPHA/MASTER/UML_Loria/NetBeansWorkspace/Bibal1/src/objets_metiers/Exemplaire.java</file>
-            <file>file:/D:/MOUSTAPHA/MASTER/UML_Loria/NetBeansWorkspace/Bibal1/src/control/ExemplaireControl.java</file>
-            <file>file:/D:/MOUSTAPHA/MASTER/UML_Loria/NetBeansWorkspace/Bibal1/src/objets_metiers/Emprunt.java</file>
-            <file>file:/D:/MOUSTAPHA/MASTER/UML_Loria/NetBeansWorkspace/Bibal1/src/objets_metiers/Reservation.java</file>
-            <file>file:/D:/MOUSTAPHA/MASTER/UML_Loria/NetBeansWorkspace/Bibal1/src/bibal/Bibal.java</file>
-            <file>file:/D:/MOUSTAPHA/MASTER/UML_Loria/NetBeansWorkspace/Bibal1/src/control/ReservationControl.java</file>
+            <file>file:/D:/MOUSTAPHA/MASTER/UML_Loria/NetBeansWorkspace/Bibal1/src/IHM/Bibal.java</file>
+            <file>file:/D:/MOUSTAPHA/MASTER/UML_Loria/NetBeansWorkspace/Bibal1/src/Utility/ModelTableau.java</file>
+            <file>file:/D:/MOUSTAPHA/MASTER/UML_Loria/NetBeansWorkspace/Bibal1/src/Utility/BibalExceptions.java</file>
+            <file>file:/D:/MOUSTAPHA/MASTER/UML_Loria/NetBeansWorkspace/Bibal1/src/IHM/NewJFrame.java</file>
+            <file>file:/D:/MOUSTAPHA/MASTER/UML_Loria/NetBeansWorkspace/Bibal1/src/IHM/GestionUsager.java</file>
         </group>
     </open-files>
 </project-private>

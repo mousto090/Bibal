@@ -97,8 +97,8 @@ public class Emprunt {
         if (null != emprunt) {
             throw new BibalExceptions("Vous avez un emprunt d'exemplaire de cette oeuvre non rendu\n"
                     + "Titre Oeuvre : " + oeuvre.getTitre() + "\n"
-                    + "Date d'emprunt : " + YMDtoDMY(emprunt.getDateEmprunt().toString()) + "\n"
-                    + "Date de retour Prévu : " + YMDtoDMY(emprunt.getDateRetourPrevu().toString()));
+                    + "Date d'emprunt : " + YMDtoDMY(emprunt.getDateEmprunt().toString(),"-") + "\n"
+                    + "Date de retour Prévu : " + YMDtoDMY(emprunt.getDateRetourPrevu().toString(),"-"));
         }
         
 //        if(oeuvre.estReservable()== true){

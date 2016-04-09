@@ -102,7 +102,7 @@ public class Reservation {
         Reservation reservation = findByReservation(usager, oeuvre);
         if (null != reservation) {
             throw new BibalExceptions("Vous avez déjà réserver l'oeuvre '" + oeuvre.getTitre()
-                    + "'\n le '" + YMDtoDMY(reservation.getDateReservation().toString()) + "'");
+                    + "'\n le '" + YMDtoDMY(reservation.getDateReservation().toString(),"-") + "'");
         }
         final String SQL_INSERT = "INSERT INTO Reservation "
                 + "(OeuvreID, UsagerID, dateReservation, DateAnnulation) "

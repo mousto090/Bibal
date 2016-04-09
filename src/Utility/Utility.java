@@ -139,9 +139,9 @@ public final class Utility {
         return new SimpleDateFormat("yyyy/MM/dd").format(date);
     }
     
-    public static String YMDtoDMY(String dateFormatYMD) {
+    public static String YMDtoDMY(String dateFormatYMD, String newSeparator) {
         String str[] = dateFormatYMD.split("-");
-        return String.join("-", str[2], str[1], str[0]);
+        return String.join(newSeparator, str[2], str[1], str[0]);
     }
     
     public static String formatMillisToDate(long dateInMilliseconds) {

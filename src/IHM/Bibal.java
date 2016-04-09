@@ -87,6 +87,7 @@ public class Bibal {
 //        cal.add(Calendar.DATE, 10);
 //        Date d = cal.getTime();
 //        System.out.println("bibal.Bibal.main()" + dateToStr(d));
+          System.out.println("IHM.Bibal.main()" + String.format("2016-04-07","dd/MM/yyyy" ));
     }
 
 }

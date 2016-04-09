@@ -93,7 +93,7 @@ public class Oeuvre {
     // c'est-à-dire la même oeuvre avec le même auteur
     private boolean oeuvreExiste(Oeuvre oeuvre) throws BibalExceptions {
         ArrayList<Oeuvre> oeuvres = findByTitre(oeuvre.getTitre());
-        if (oeuvres.isEmpty()) {
+        if (null == oeuvres) {
             return false;
         }
         Stream<Oeuvre> filterOeuvre

@@ -8,19 +8,22 @@ package IHM;
 import Utility.BibalExceptions;
 import Utility.DBConnection;
 import Utility.ModelTableau;
+import static Utility.Utility.YMDtoDMY;
 import static Utility.Utility.closeStatementResultSet;
+import static Utility.Utility.formatDate;
 import static Utility.Utility.initialiseRequetePreparee;
 import control.UsagerControl;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import objets_metiers.Usager;
 
@@ -28,7 +31,7 @@ import objets_metiers.Usager;
  *
  * @author SIMO
  */
-public class GestionUsager extends javax.swing.JFrame {
+public class GestionUsager extends javax.swing.JFrame implements MouseListener {
 
     /**
      * Creates new form GestionUsager
@@ -40,6 +43,8 @@ public class GestionUsager extends javax.swing.JFrame {
         //this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
         setResizable(false);
         setIdentifiant();
+
+        tableListeUsager.addMouseListener(this);
     }
 
     /**
@@ -51,13 +56,11 @@ public class GestionUsager extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        sexeBttonGroup = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         panRecherch = new javax.swing.JPanel();
         RecherchParLabel = new javax.swing.JLabel();
         RecherchField = new javax.swing.JFormattedTextField();
         RecherchCombo = new javax.swing.JComboBox();
-        jLabel6 = new javax.swing.JLabel();
         RecherchBouton = new javax.swing.JButton();
         panListeUsager = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -81,6 +84,7 @@ public class GestionUsager extends javax.swing.JFrame {
         annulerBouton = new javax.swing.JButton();
         ajouterBouton = new javax.swing.JButton();
         modifierBouton = new javax.swing.JButton();
+        supprimerButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         retourButton = new javax.swing.JButton();
 
@@ -103,11 +107,19 @@ public class GestionUsager extends javax.swing.JFrame {
 
         RecherchCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Identifiant", "Nom", "Tout afficher" }));
         RecherchCombo.setPreferredSize(new java.awt.Dimension(123, 26));
+        RecherchCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RecherchComboActionPerformed(evt);
+            }
+        });
 
-        jLabel6.setText("Texte à rechercher  ");
-
-        RecherchBouton.setText("OK");
+        RecherchBouton.setText("Rechercher");
         RecherchBouton.setPreferredSize(new java.awt.Dimension(47, 26));
+        RecherchBouton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RecherchBoutonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panRecherchLayout = new javax.swing.GroupLayout(panRecherch);
         panRecherch.setLayout(panRecherchLayout);
@@ -116,16 +128,15 @@ public class GestionUsager extends javax.swing.JFrame {
             .addGroup(panRecherchLayout.createSequentialGroup()
                 .addGap(155, 155, 155)
                 .addGroup(panRecherchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(RecherchParLabel)
-                    .addComponent(jLabel6))
-                .addGap(23, 23, 23)
-                .addGroup(panRecherchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panRecherchLayout.createSequentialGroup()
-                        .addComponent(RecherchField, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(RecherchBouton, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(RecherchCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(284, Short.MAX_VALUE))
+                        .addComponent(RecherchParLabel)
+                        .addGap(41, 41, 41)
+                        .addComponent(RecherchCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panRecherchLayout.createSequentialGroup()
+                        .addComponent(RecherchField, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(RecherchBouton, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(184, Short.MAX_VALUE))
         );
         panRecherchLayout.setVerticalGroup(
             panRecherchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -137,7 +148,6 @@ public class GestionUsager extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panRecherchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(RecherchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6)
                     .addComponent(RecherchBouton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(25, Short.MAX_VALUE))
         );
@@ -153,7 +163,7 @@ public class GestionUsager extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Identifiant", "Civilité", "Nom", "Prénom", "Date de naissance", "Téléphone", "Adresse"
+                "Identifiant", "Nom", "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -204,11 +214,6 @@ public class GestionUsager extends javax.swing.JFrame {
         identifiantField.setEnabled(false);
         identifiantField.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         identifiantField.setPreferredSize(new java.awt.Dimension(123, 26));
-        identifiantField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                identifiantFieldActionPerformed(evt);
-            }
-        });
 
         prenomLabel.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         prenomLabel.setForeground(new java.awt.Color(0, 0, 255));
@@ -270,14 +275,14 @@ public class GestionUsager extends javax.swing.JFrame {
                     .addComponent(prenomLabel1))
                 .addGap(58, 58, 58)
                 .addGroup(panAjoutBasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(civiliteCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(identifiantField, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+                    .addComponent(civiliteCombo, 0, 161, Short.MAX_VALUE)
+                    .addComponent(identifiantField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(nomField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(prenomField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(dateNaisPicker, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(telField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(adresseField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
         panAjoutBasLayout.setVerticalGroup(
             panAjoutBasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -331,17 +336,34 @@ public class GestionUsager extends javax.swing.JFrame {
 
         modifierBouton.setFont(new java.awt.Font("Times New Roman", 1, 16)); // NOI18N
         modifierBouton.setText("Modifier");
+        modifierBouton.setEnabled(false);
+        modifierBouton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                modifierBoutonActionPerformed(evt);
+            }
+        });
+
+        supprimerButton.setFont(new java.awt.Font("Times New Roman", 1, 16)); // NOI18N
+        supprimerButton.setText("Supprimer");
+        supprimerButton.setEnabled(false);
+        supprimerButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                supprimerButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panAjoutUsagerLayout = new javax.swing.GroupLayout(panAjoutUsager);
         panAjoutUsager.setLayout(panAjoutUsagerLayout);
         panAjoutUsagerLayout.setHorizontalGroup(
             panAjoutUsagerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(modifierBouton, javax.swing.GroupLayout.Alignment.CENTER)
             .addComponent(panAjoutBas, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(panAjoutUsagerLayout.createSequentialGroup()
-                .addGap(10, 10, 10)
                 .addComponent(annulerBouton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(supprimerButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(modifierBouton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ajouterBouton)
                 .addGap(10, 10, 10))
         );
@@ -350,11 +372,11 @@ public class GestionUsager extends javax.swing.JFrame {
             .addGroup(panAjoutUsagerLayout.createSequentialGroup()
                 .addComponent(panAjoutBas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29)
-                .addGroup(panAjoutUsagerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(ajouterBouton, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(panAjoutUsagerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(annulerBouton)
-                        .addComponent(modifierBouton))))
+                .addGroup(panAjoutUsagerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(ajouterBouton)
+                    .addComponent(modifierBouton)
+                    .addComponent(annulerBouton)
+                    .addComponent(supprimerButton)))
         );
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 36)); // NOI18N
@@ -419,16 +441,17 @@ public class GestionUsager extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void identifiantFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_identifiantFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_identifiantFieldActionPerformed
-
     private void civiliteComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_civiliteComboActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_civiliteComboActionPerformed
 
     private void annulerBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerBoutonActionPerformed
         clearField();
+        modifierBouton.setEnabled(false);
+        supprimerButton.setEnabled(false);
+        ajouterBouton.setEnabled(true);
+        setIdentifiant();
+
     }//GEN-LAST:event_annulerBoutonActionPerformed
 
     private void ajouterBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ajouterBoutonActionPerformed
@@ -436,17 +459,21 @@ public class GestionUsager extends javax.swing.JFrame {
             String nom = nomField.getText();
             String prenom = prenomField.getText();
             Date dateNais = dateNaisPicker.getDate();
-            String sexe = civiliteCombo.getSelectedItem().toString().equals("M") ? "Masculin" : "féminin";
+            String sexe = civiliteCombo.getSelectedItem().toString().equals("M") ? "Masculin" : "Féminin";
             String adresse = adresseField.getText();
             String tel = telField.getText().replace("-", "").trim();
             UsagerControl.ajouter(new Usager(nom, prenom, dateNais, sexe, adresse, tel));
             JOptionPane.showMessageDialog(null, "Usager ajouté avec succès", "Informations", JOptionPane.INFORMATION_MESSAGE);
             setIdentifiant();
             clearField();
-            fillListeUsager("SELECT * FROM usager ORDER BY id DESC LIMIT 10", new Object[0]);
+            String titre[] = new String[]{"Identifiant", "Nom",
+                "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
+            final String REQUETE = "SELECT id, nom, prenom, dateNais, sexe, tel, adresse"
+                    + " FROM usager ORDER BY id DESC LIMIT 10";
+            fillListeUsager(REQUETE, new Object[0], titre);
 
         } catch (BibalExceptions ex) {
-            Logger.getLogger(GestionUsager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
     }//GEN-LAST:event_ajouterBoutonActionPerformed
 
@@ -456,10 +483,135 @@ public class GestionUsager extends javax.swing.JFrame {
         m.setVisible(true);
     }//GEN-LAST:event_retourButtonActionPerformed
 
-    private void fillListeUsager(String sql, Object param[]) {
-        Object data[][] = null;
-        String titre[] = new String[]{"Identifiant", "Civilité", "Nom",
-            "Prénom", "Date de naissance", "Téléphone", "Adresse"};
+    private void modifierBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifierBoutonActionPerformed
+        try {
+            int identifiant = Integer.parseInt(identifiantField.getText());
+            String nom = nomField.getText();
+            String prenom = prenomField.getText();
+            Date dateNais = dateNaisPicker.getDate();
+            String sexe = civiliteCombo.getSelectedItem().toString().equals("M") ? "Masculin" : "Féminin";
+            String adresse = adresseField.getText();
+            String tel = telField.getText().replace("-", "").trim();
+            UsagerControl.modifier(new Usager(identifiant, nom, prenom, dateNais, sexe, adresse, tel));
+            JOptionPane.showMessageDialog(null, "Les modifications ont été enregistrées", "Informations", JOptionPane.INFORMATION_MESSAGE);
+            setIdentifiant();
+            clearField();
+            String titre[] = new String[]{"Identifiant", "Nom",
+                "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
+            final String REQUETE = "SELECT id, nom, prenom, dateNais, sexe, tel, adresse"
+                    + " FROM usager ORDER BY id DESC LIMIT 10";
+            fillListeUsager(REQUETE, new Object[0], titre);
+
+            modifierBouton.setEnabled(false);
+            supprimerButton.setEnabled(false);
+            ajouterBouton.setEnabled(true);
+        } catch (BibalExceptions ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_modifierBoutonActionPerformed
+
+    private void supprimerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_supprimerButtonActionPerformed
+        try {
+            int identifiant = Integer.parseInt(identifiantField.getText());
+            String nom = nomField.getText();
+            String prenom = prenomField.getText();
+            Date dateNais = dateNaisPicker.getDate();
+            String sexe = civiliteCombo.getSelectedItem().toString().equals("M") ? "Masculin" : "Féminin";
+            String adresse = adresseField.getText();
+            String tel = telField.getText().replace("-", "").trim();
+            UsagerControl.supprimer(new Usager(identifiant, nom, prenom, dateNais, sexe, adresse, tel));
+            JOptionPane.showMessageDialog(null, "L'enregistrement a bien été supprimé", "Informations", JOptionPane.INFORMATION_MESSAGE);
+            setIdentifiant();
+            clearField();
+            String titre[] = new String[]{"Identifiant", "Nom",
+                "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
+            final String REQUETE = "SELECT id, nom, prenom, dateNais, sexe, tel, adresse"
+                    + " FROM usager ORDER BY id DESC LIMIT 10";
+            fillListeUsager(REQUETE, new Object[0], titre);
+
+            modifierBouton.setEnabled(false);
+            supprimerButton.setEnabled(false);
+            ajouterBouton.setEnabled(true);
+        } catch (BibalExceptions ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_supprimerButtonActionPerformed
+
+    private void RecherchBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RecherchBoutonActionPerformed
+        String rechPar = RecherchCombo.getSelectedItem().toString();
+        String textARechercher = RecherchField.getText().trim();
+        if (textARechercher.length() > 0) {
+            ArrayList<Usager> listUsagers = new ArrayList<>();
+            try {
+                switch (rechPar) {
+                    case "Identifiant":
+                        int identifiant = Integer.parseInt(textARechercher);
+                        Usager usager = UsagerControl.findById(identifiant);
+                        listUsagers.add(usager);
+                        fillUsagerJtable(listUsagers);
+                        break;
+                    case "Nom":
+                        listUsagers = UsagerControl.findByNom(textARechercher);
+                        fillUsagerJtable(listUsagers);
+                        break;
+                    case "Tout afficher":
+                        listUsagers = UsagerControl.getListUsagers();
+                        fillUsagerJtable(listUsagers);
+                        break;
+                }
+            } catch (BibalExceptions e) {
+                System.out.println("IHM.GestionUsager.RecherchBoutonActionPerformed() : Erreurs");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Identifiant non valide", "Informations", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_RecherchBoutonActionPerformed
+
+    private void RecherchComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RecherchComboActionPerformed
+
+        if (RecherchCombo.getSelectedItem().equals("Tout afficher")) {
+            try {
+                ArrayList<Usager> listUsagers = UsagerControl.getListUsagers();
+                fillUsagerJtable(listUsagers);
+                RecherchBouton.setEnabled(false);
+            } catch (BibalExceptions e) {
+                System.out.println("IHM.GestionUsager.RecherchComboActionPerformed() : Erreurs");
+            }
+        } else {
+            RecherchBouton.setEnabled(true);
+        }
+    }//GEN-LAST:event_RecherchComboActionPerformed
+
+    private void fillUsagerJtable(ArrayList<Usager> listUsagers) {
+        String titre[] = new String[]{"Identifiant", "Nom",
+            "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
+        if (null != listUsagers) {
+            Object data[][] = new Object[listUsagers.size()][titre.length];
+            int nbLigne = listUsagers.size();
+            for (int i = 0; i < nbLigne; i++) {
+                Usager usager = listUsagers.get(i);
+                data[i][0] = usager.getId();
+                data[i][1] = usager.getNom();
+                data[i][2] = usager.getPrenom();
+                data[i][3] = usager.getDateNais();
+                data[i][4] = usager.getSexe();
+                data[i][5] = usager.getTel();
+                data[i][6] = usager.getAdresse();
+            }
+            ModelTableau model = new ModelTableau(data, titre);
+            tableListeUsager.setModel(model);
+            tableListeUsager.setRowHeight(30);
+        } else {
+            //afficher tableau vide
+            Object data[][] = new Object[listUsagers.size()][titre.length];
+            ModelTableau model = new ModelTableau(data, titre);
+            tableListeUsager.setModel(model);
+            tableListeUsager.setRowHeight(1);
+        }
+    }
+
+    private void fillListeUsager(String sql, Object param[], String titre[]) {
+        Object data[][];
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
@@ -483,29 +635,24 @@ public class GestionUsager extends javax.swing.JFrame {
                 }
                 nbreLine++;
             }
-            ModelTableau model = new ModelTableau(data, titre);
-            tableListeUsager.setModel(model);
-            tableListeUsager.setRowHeight(30);
-            
-            System.out.println("IHM.GestionUsager.fillListeUsager()" + tableListeUsager.getModel().getRowCount());
-//            if (nbreLine != 0) {
-//                ModelTableau model = new ModelTableau(data, titre);
-//                tableListeUsager.setModel(model);
-//                tableListeUsager.setRowHeight(30);
-//                System.out.println("IHM.GestionUsager.fillListeUsager()" + nbreLine);
-//            } else {
-//                //afficher tableau vide
-//                data = new Object[1][titre.length];
-//                ModelTableau model = new ModelTableau(data, titre);
-//                tableListeUsager.setModel(model);
-//                tableListeUsager.setRowHeight(1);
-//            }
+
+            if (nbreLine != 0) {
+                ModelTableau model = new ModelTableau(data, titre);
+                tableListeUsager.setModel(model);
+                tableListeUsager.setRowHeight(30);
+            } else {
+                //afficher tableau vide
+                data = new Object[1][titre.length];
+                ModelTableau model = new ModelTableau(data, titre);
+                tableListeUsager.setModel(model);
+                tableListeUsager.setRowHeight(1);
+            }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("IHM.GestionUsager.fillListeUsager()");
         } catch (BibalExceptions e) {
-            e.printStackTrace();
-        }finally{
+            System.out.println("IHM.GestionUsager.fillListeUsager()");
+        } finally {
             closeStatementResultSet(preparedStatement, resultSet);
         }
     }
@@ -536,6 +683,51 @@ public class GestionUsager extends javax.swing.JFrame {
         } finally {
             closeStatementResultSet(preparedStatement, resultSet);
         }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        int row = tableListeUsager.getSelectedRow();
+        int nbreCol = tableListeUsager.getColumnCount();
+
+        Object dataLigneSelected[] = new Object[nbreCol];
+        if (row >= 0) {
+            for (int i = 0; i < nbreCol; i++) {
+                dataLigneSelected[i] = tableListeUsager.getModel().getValueAt(row, i);
+            }
+            identifiantField.setText(dataLigneSelected[0].toString());
+            nomField.setText(dataLigneSelected[1].toString());
+            prenomField.setText(dataLigneSelected[2].toString());
+            try {
+                dateNaisPicker.setDate(formatDate(YMDtoDMY(dataLigneSelected[3].toString(), "/")));
+            } catch (BibalExceptions ex) {
+                ex.printStackTrace();
+            }
+            String sexe = dataLigneSelected[4].toString();
+            String civilite = sexe.equalsIgnoreCase("Masculin") ? "M" : "Mme";
+            civiliteCombo.setSelectedItem(civilite);
+            telField.setText(dataLigneSelected[5].toString());
+            adresseField.setText(dataLigneSelected[6].toString());
+            modifierBouton.setEnabled(true);
+            supprimerButton.setEnabled(true);
+            ajouterBouton.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
     }
 
     /**
@@ -590,7 +782,6 @@ public class GestionUsager extends javax.swing.JFrame {
     private org.jdesktop.swingx.JXDatePicker dateNaisPicker;
     private javax.swing.JFormattedTextField identifiantField;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel matriculeLabel;
@@ -605,7 +796,7 @@ public class GestionUsager extends javax.swing.JFrame {
     private javax.swing.JLabel prenomLabel;
     private javax.swing.JLabel prenomLabel1;
     private javax.swing.JButton retourButton;
-    private javax.swing.ButtonGroup sexeBttonGroup;
+    private javax.swing.JButton supprimerButton;
     private javax.swing.JTable tableListeUsager;
     private javax.swing.JFormattedTextField telField;
     private javax.swing.JLabel telLabel;

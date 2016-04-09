@@ -30,11 +30,19 @@ public class UsagerControl {
         usager.modifier(usager);
     }
 
+    public static void supprimer(Usager usager) throws BibalExceptions {
+        usager.delete(usager);
+    }
+
     public static Usager findById(int id) throws BibalExceptions {
         return new Usager().findById(id);
     }
 
     public static ArrayList<Usager> findByNom(String nom) throws BibalExceptions {
         return new Usager().findByNom(nom);
+    }
+    
+    public static ArrayList<Usager> getListUsagers() throws BibalExceptions {
+        return new Usager().getListUsagers();
     }
 }

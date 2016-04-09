@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.6" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
-  <NonVisualComponents>
-    <Component class="javax.swing.ButtonGroup" name="sexeBttonGroup">
-    </Component>
-  </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -122,19 +118,18 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="155" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="RecherchParLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel6" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="RecherchField" min="-2" pref="134" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="RecherchBouton" min="-2" pref="65" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="RecherchParLabel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
+                              <Component id="RecherchCombo" min="-2" pref="134" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="RecherchCombo" alignment="0" min="-2" pref="134" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="RecherchField" min="-2" pref="272" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="RecherchBouton" min="-2" pref="117" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
-                      <EmptySpace pref="284" max="32767" attributes="0"/>
+                      <EmptySpace pref="184" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -149,7 +144,6 @@
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="RecherchField" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="RecherchBouton" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace pref="25" max="32767" attributes="0"/>
@@ -184,19 +178,20 @@
                   <Dimension value="[123, 26]"/>
                 </Property>
               </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel6">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Texte &#xe0; rechercher  "/>
-              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="RecherchComboActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="RecherchBouton">
               <Properties>
-                <Property name="text" type="java.lang.String" value="OK"/>
+                <Property name="text" type="java.lang.String" value="Rechercher"/>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[47, 26]"/>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="RecherchBoutonActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
@@ -247,10 +242,10 @@
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                       <Table columnCount="7" rowCount="0">
                         <Column editable="false" title="Identifiant" type="java.lang.Object"/>
-                        <Column editable="false" title="Civilit&#xe9;" type="java.lang.Object"/>
                         <Column editable="false" title="Nom" type="java.lang.Object"/>
                         <Column editable="false" title="Pr&#xe9;nom" type="java.lang.Object"/>
                         <Column editable="false" title="Date de naissance" type="java.lang.Object"/>
+                        <Column editable="false" title="Sexe" type="java.lang.Object"/>
                         <Column editable="false" title="T&#xe9;l&#xe9;phone" type="java.lang.Object"/>
                         <Column editable="false" title="Adresse" type="java.lang.Object"/>
                       </Table>
@@ -321,12 +316,14 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="modifierBouton" alignment="2" min="-2" max="-2" attributes="0"/>
                   <Component id="panAjoutBas" alignment="2" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
                       <Component id="annulerBouton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
+                      <Component id="supprimerButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="modifierBouton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="ajouterBouton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
                   </Group>
@@ -337,12 +334,11 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="panAjoutBas" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="ajouterBouton" alignment="1" min="-2" max="-2" attributes="0"/>
-                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="annulerBouton" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="modifierBouton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="ajouterBouton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="modifierBouton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="annulerBouton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="supprimerButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -377,15 +373,15 @@
                           </Group>
                           <EmptySpace min="-2" pref="58" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="2" attributes="0">
-                              <Component id="civiliteCombo" alignment="2" max="32767" attributes="0"/>
-                              <Component id="identifiantField" alignment="2" pref="173" max="32767" attributes="0"/>
+                              <Component id="civiliteCombo" alignment="2" pref="161" max="32767" attributes="0"/>
+                              <Component id="identifiantField" alignment="2" max="32767" attributes="0"/>
                               <Component id="nomField" alignment="2" max="32767" attributes="0"/>
                               <Component id="prenomField" alignment="2" max="32767" attributes="0"/>
                               <Component id="dateNaisPicker" alignment="2" max="32767" attributes="0"/>
                               <Component id="telField" alignment="2" max="32767" attributes="0"/>
                               <Component id="adresseField" alignment="2" max="32767" attributes="0"/>
                           </Group>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace pref="49" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -477,9 +473,6 @@
                       <Dimension value="[123, 26]"/>
                     </Property>
                   </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="identifiantFieldActionPerformed"/>
-                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="prenomLabel">
                   <Properties>
@@ -620,7 +613,23 @@
                   <Font name="Times New Roman" size="16" style="1"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Modifier"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="modifierBoutonActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="supprimerButton">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Times New Roman" size="16" style="1"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Supprimer"/>
+                <Property name="enabled" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="supprimerButtonActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

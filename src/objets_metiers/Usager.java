@@ -214,7 +214,7 @@ public class Usager {
      * @return
      * @throws BibalExceptions
      */
-    public ArrayList<Usager> getAll() throws BibalExceptions {
+    public ArrayList<Usager> getListUsagers() throws BibalExceptions {
         final String SQL_SELECT = "SELECT * FROM usager ORDER BY id";
         return find(SQL_SELECT, new Object[0]);
     }

@@ -3,9 +3,9 @@ package objets_metiers;
 import Utility.BibalExceptions;
 
 public class Livre extends Oeuvre {
-
+    
     private int lending;
-
+    
     public Livre() {
         this.lending = 10;
         this.nbResa = 0;
@@ -18,16 +18,20 @@ public class Livre extends Oeuvre {
         this.categorie = categorie;
     }
     
-    public Livre(int id, String titre, String auteur, String categorie, int nbResa) {
+    public Livre(int id, String titre, String auteur, String categorie) {
         this(titre, auteur, categorie);
         this.id = id;
+    }
+
+    public Livre(int id, String titre, String auteur, String categorie, int nbResa) {
+        this(id, titre, auteur, categorie);
         this.nbResa = nbResa;
     }
-        
+    
     public int getLending() {
         return this.lending;
     }
-
+    
     public void setLending(int lending) throws BibalExceptions {
         if (lending < 10) {
             throw new BibalExceptions("La durée d'emprunt des livres "

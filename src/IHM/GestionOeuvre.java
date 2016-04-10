@@ -6,23 +6,22 @@
 package IHM;
 
 import Utility.BibalExceptions;
-import Utility.DBConnection;
 import Utility.ModelTableau;
-import static Utility.Utility.closeStatementResultSet;
-import static Utility.Utility.initialiseRequetePreparee;
-import control.UsagerControl;
+import control.OeuvreControl;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import objets_metiers.Usager;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
+import objets_metiers.Livre;
+import objets_metiers.Magazine;
+import objets_metiers.Oeuvre;
 
 /**
  *
@@ -39,9 +38,7 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         //this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
         setResizable(false);
-        setIdentifiant();
-
-        tableListeUsager.addMouseListener(this);
+        tableListeOeuvre.addMouseListener(this);
     }
 
     /**
@@ -59,16 +56,16 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
         RecherchField = new javax.swing.JFormattedTextField();
         RecherchCombo = new javax.swing.JComboBox();
         RecherchBouton = new javax.swing.JButton();
-        panListeUsager = new javax.swing.JPanel();
+        panListeOeuvre = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tableListeUsager = new javax.swing.JTable();
+        tableListeOeuvre = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         retourButton = new javax.swing.JButton();
         modifierBouton = new javax.swing.JButton();
         ajouterBouton = new javax.swing.JButton();
+        exemplaireButton = new javax.swing.JButton();
         supprimerButton = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        afficherButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -88,7 +85,7 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
         RecherchField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         RecherchField.setPreferredSize(new java.awt.Dimension(130, 26));
 
-        RecherchCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Identifiant", "Nom", "Tout afficher" }));
+        RecherchCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Identifiant", "Titre", "Tout afficher" }));
         RecherchCombo.setPreferredSize(new java.awt.Dimension(123, 26));
         RecherchCombo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -134,13 +131,13 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
                 .addContainerGap())
         );
 
-        panListeUsager.setBackground(new java.awt.Color(255, 255, 255));
-        panListeUsager.setBorder(javax.swing.BorderFactory.createTitledBorder("Liste des Oeuvres"));
+        panListeOeuvre.setBackground(new java.awt.Color(255, 255, 255));
+        panListeOeuvre.setBorder(javax.swing.BorderFactory.createTitledBorder("Liste des Oeuvres"));
 
         jScrollPane1.getViewport().setBackground(Color.white);
         jScrollPane1.setBackground(new java.awt.Color(255, 255, 255));
 
-        tableListeUsager.setModel(new javax.swing.table.DefaultTableModel(
+        tableListeOeuvre.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -156,25 +153,24 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
                 return canEdit [columnIndex];
             }
         });
-        tableListeUsager.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        tableListeUsager.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(tableListeUsager);
-        if (tableListeUsager.getColumnModel().getColumnCount() > 0) {
-            tableListeUsager.getColumnModel().getColumn(0).setPreferredWidth(40);
-            tableListeUsager.getColumnModel().getColumn(5).setPreferredWidth(50);
+        tableListeOeuvre.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tableListeOeuvre.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(tableListeOeuvre);
+        if (tableListeOeuvre.getColumnModel().getColumnCount() > 0) {
+            tableListeOeuvre.getColumnModel().getColumn(5).setPreferredWidth(50);
         }
 
-        javax.swing.GroupLayout panListeUsagerLayout = new javax.swing.GroupLayout(panListeUsager);
-        panListeUsager.setLayout(panListeUsagerLayout);
-        panListeUsagerLayout.setHorizontalGroup(
-            panListeUsagerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panListeUsagerLayout.createSequentialGroup()
+        javax.swing.GroupLayout panListeOeuvreLayout = new javax.swing.GroupLayout(panListeOeuvre);
+        panListeOeuvre.setLayout(panListeOeuvreLayout);
+        panListeOeuvreLayout.setHorizontalGroup(
+            panListeOeuvreLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panListeOeuvreLayout.createSequentialGroup()
                 .addGap(0, 0, 0)
                 .addComponent(jScrollPane1)
                 .addGap(0, 0, 0))
         );
-        panListeUsagerLayout.setVerticalGroup(
-            panListeUsagerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        panListeOeuvreLayout.setVerticalGroup(
+            panListeOeuvreLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
 
@@ -206,16 +202,26 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
             }
         });
 
+        exemplaireButton.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
+        exemplaireButton.setText("Exemplaire");
+        exemplaireButton.setEnabled(false);
+
         supprimerButton.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
-        supprimerButton.setText("Exemplaire");
+        supprimerButton.setText("Supprimer");
         supprimerButton.setEnabled(false);
+        supprimerButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                supprimerButtonActionPerformed(evt);
+            }
+        });
 
-        jButton2.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
-        jButton2.setText("Supprimer");
-        jButton2.setEnabled(false);
-
-        jButton1.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
-        jButton1.setText("Afficher");
+        afficherButton.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
+        afficherButton.setText("Afficher");
+        afficherButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                afficherButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -224,12 +230,12 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(supprimerButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(exemplaireButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(retourButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(modifierBouton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(ajouterBouton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(supprimerButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(afficherButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(40, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -238,13 +244,13 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
                 .addContainerGap()
                 .addComponent(ajouterBouton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 58, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addComponent(afficherButton)
                 .addGap(43, 43, 43)
                 .addComponent(modifierBouton)
                 .addGap(47, 47, 47)
-                .addComponent(jButton2)
-                .addGap(45, 45, 45)
                 .addComponent(supprimerButton)
+                .addGap(45, 45, 45)
+                .addComponent(exemplaireButton)
                 .addGap(45, 45, 45)
                 .addComponent(retourButton)
                 .addGap(28, 28, 28))
@@ -265,7 +271,7 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(panRecherch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(panListeUsager, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(panListeOeuvre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(79, 79, 79)
                         .addComponent(jLabel1)))
@@ -281,7 +287,7 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(panRecherch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(panListeUsager, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(panListeOeuvre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -314,22 +320,22 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
         String rechPar = RecherchCombo.getSelectedItem().toString();
         String textARechercher = RecherchField.getText().trim();
         if (textARechercher.length() > 0) {
-            ArrayList<Usager> listUsagers = new ArrayList<>();
+            ArrayList<Oeuvre> listOeuvres = new ArrayList<>();
             try {
                 switch (rechPar) {
                     case "Identifiant":
                         int identifiant = Integer.parseInt(textARechercher);
-                        Usager usager = UsagerControl.findById(identifiant);
-                        listUsagers.add(usager);
-                        fillUsagerJtable(listUsagers);
+                        Oeuvre oeuvre = OeuvreControl.findById(identifiant);
+                        listOeuvres.add(oeuvre);
+                        fillOeuvreJtable(listOeuvres);
                         break;
-                    case "Nom":
-                        listUsagers = UsagerControl.findByNom(textARechercher);
-                        fillUsagerJtable(listUsagers);
+                    case "Titre":
+                        listOeuvres = OeuvreControl.findByTitre(textARechercher);
+                        fillOeuvreJtable(listOeuvres);
                         break;
                     case "Tout afficher":
-                        listUsagers = UsagerControl.getListUsagers();
-                        fillUsagerJtable(listUsagers);
+                        listOeuvres = OeuvreControl.getListOeuvres();
+                        fillOeuvreJtable(listOeuvres);
                         break;
                 }
             } catch (BibalExceptions e) {
@@ -344,14 +350,16 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
 
         if (RecherchCombo.getSelectedItem().equals("Tout afficher")) {
             try {
-                ArrayList<Usager> listUsagers = UsagerControl.getListUsagers();
-                fillUsagerJtable(listUsagers);
+                ArrayList<Oeuvre> listOeuvres = OeuvreControl.getListOeuvres();
+                fillOeuvreJtable(listOeuvres);
                 RecherchBouton.setEnabled(false);
+                RecherchField.setEnabled(false);
             } catch (BibalExceptions e) {
                 System.out.println("IHM.GestionUsager.RecherchComboActionPerformed() : Erreurs");
             }
         } else {
             RecherchBouton.setEnabled(true);
+            RecherchField.setEditable(true);
         }
     }//GEN-LAST:event_RecherchComboActionPerformed
 
@@ -360,158 +368,104 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
         AjoutOeuvre ajoutOeuvre = new AjoutOeuvre(this, true);
         ajoutOeuvre.setLocationRelativeTo(null);
         ajoutOeuvre.setVisible(true);
-
-        //tester le bouton sur lequel on a appuyé puis rafraichir la jtable
-//        try {
-//            String nom = nomField.getText();
-//            String prenom = prenomField.getText();
-//            Date dateNais = dateNaisPicker.getDate();
-//            String sexe = civiliteCombo.getSelectedItem().toString().equals("M") ? "Masculin" : "Féminin";
-//            String adresse = adresseField.getText();
-//            String tel = telField.getText().replace("-", "").trim();
-//            UsagerControl.ajouter(new Usager(nom, prenom, dateNais, sexe, adresse, tel));
-//            JOptionPane.showMessageDialog(null, "Usager ajouté avec succès", "Informations", JOptionPane.INFORMATION_MESSAGE);
-//            setIdentifiant();
-//            clearField();
-//            String titre[] = new String[]{"Identifiant", "Nom",
-//                "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
-//            final String REQUETE = "SELECT id, nom, prenom, dateNais, sexe, tel, adresse"
-//            + " FROM usager ORDER BY id DESC LIMIT 10";
-//            fillListeUsager(REQUETE, new Object[0], titre);
-//
-//        } catch (BibalExceptions ex) {
-//            ex.printStackTrace();
-//        }
     }//GEN-LAST:event_ajouterBoutonActionPerformed
 
     private void modifierBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifierBoutonActionPerformed
-//        try {
-//            int identifiant = Integer.parseInt(identifiantField.getText());
-//            String nom = nomField.getText();
-//            String prenom = prenomField.getText();
-//            Date dateNais = dateNaisPicker.getDate();
-//            String sexe = civiliteCombo.getSelectedItem().toString().equals("M") ? "Masculin" : "Féminin";
-//            String adresse = adresseField.getText();
-//            String tel = telField.getText().replace("-", "").trim();
-//            UsagerControl.modifier(new Usager(identifiant, nom, prenom, dateNais, sexe, adresse, tel));
-//            JOptionPane.showMessageDialog(null, "Les modifications ont été enregistrées", "Informations", JOptionPane.INFORMATION_MESSAGE);
-//            setIdentifiant();
-//            clearField();
-//            String titre[] = new String[]{"Identifiant", "Nom",
-//                "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
-//            final String REQUETE = "SELECT id, nom, prenom, dateNais, sexe, tel, adresse"
-//            + " FROM usager ORDER BY id DESC LIMIT 10";
-//            fillListeUsager(REQUETE, new Object[0], titre);
-//
-//            modifierBouton.setEnabled(false);
-//            supprimerButton.setEnabled(false);
-//            ajouterBouton.setEnabled(true);
-//        } catch (BibalExceptions ex) {
-//            ex.printStackTrace();
-//        }
+        ModificationOeuvre modificationOeuvre;
+        int id = Integer.parseInt(dataLigneSelected[0].toString());
+        String titre = dataLigneSelected[1].toString();
+        String auteur = dataLigneSelected[2].toString();
+        String categorie = dataLigneSelected[3].toString();
+        String typeOeuvre = dataLigneSelected[4].toString();
+        if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
+            modificationOeuvre = new ModificationOeuvre(this, true,
+                    new Magazine(id, titre, auteur, categorie), typeOeuvre);
+        } else {
+            modificationOeuvre = new ModificationOeuvre(this, true,
+                    new Livre(id, titre, auteur, categorie), typeOeuvre);
+        }
+        modificationOeuvre.setLocationRelativeTo(null);
+        modificationOeuvre.setVisible(true);
     }//GEN-LAST:event_modifierBoutonActionPerformed
 
-    private void fillUsagerJtable(ArrayList<Usager> listUsagers) {
-        String titre[] = new String[]{"Identifiant", "Nom",
-            "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
-        if (null != listUsagers) {
-            Object data[][] = new Object[listUsagers.size()][titre.length];
-            int nbLigne = listUsagers.size();
+    private void afficherButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afficherButtonActionPerformed
+        try {
+            ArrayList<Oeuvre> listoeOeuvres = OeuvreControl.getListOeuvres();
+            fillOeuvreJtable(listoeOeuvres);
+        } catch (BibalExceptions ex) {
+            System.out.println("IHM.GestionOeuvre.afficherButtonActionPerformed()");
+        }
+    }//GEN-LAST:event_afficherButtonActionPerformed
+
+    private void supprimerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_supprimerButtonActionPerformed
+
+        try {
+            int id = Integer.parseInt(dataLigneSelected[0].toString());
+            int nbExemplaire = Integer.parseInt(dataLigneSelected[5].toString());
+            String message;
+            if (nbExemplaire > 0) {
+                message = "Vous ne pouvez pas supprimer cette oeuvre\n"
+                        + " Elle a " + nbExemplaire + " exemplaire"
+                        + (nbExemplaire > 1 ? "s" : "");
+                JOptionPane.showMessageDialog(null, message,
+                        "Informations", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                message = "Cette oeuvre a " + nbExemplaire + " exemplaire\n"
+                        + "\n Voulez-vous la supprimer ?";
+                int reponse = JOptionPane.showConfirmDialog(null, message,
+                        "Avertissement", JOptionPane.OK_CANCEL_OPTION);
+                if (reponse == JOptionPane.OK_OPTION) {
+                    String titre = dataLigneSelected[1].toString();
+                    String auteur = dataLigneSelected[2].toString();
+                    String categorie = dataLigneSelected[3].toString();
+                    String typeOeuvre = dataLigneSelected[4].toString();
+                    if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
+                        OeuvreControl.supprimer(new Magazine(id, titre, auteur, categorie));
+                    } else {
+                        OeuvreControl.supprimer(new Livre(id, titre, auteur, categorie));
+                    }
+                    ((ModelTableau)tableListeOeuvre.getModel()).removeRow(tableListeOeuvre.getSelectedRow());
+                    JOptionPane.showMessageDialog(null, "L'Oeuvre a bien été supprimée",
+                            "Informations", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+
+        } catch (BibalExceptions ex) {
+            Logger.getLogger(GestionOeuvre.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }//GEN-LAST:event_supprimerButtonActionPerformed
+
+    private void fillOeuvreJtable(ArrayList<Oeuvre> listOeuvres) {
+        String titre[] = new String[]{"ID", "Titre",
+            "Auteur", "Catégorie", "Type", "Exemplaires", "Réservations"};
+        if (listOeuvres.size() > 0) {
+//            pour le findByID si l'objet ajouté est null
+            int nbLigne = (null == listOeuvres.get(0)) ? 0 : listOeuvres.size();
+            Object data[][] = new Object[nbLigne][titre.length];
             for (int i = 0; i < nbLigne; i++) {
-                Usager usager = listUsagers.get(i);
-                data[i][0] = usager.getId();
-                data[i][1] = usager.getNom();
-                data[i][2] = usager.getPrenom();
-                data[i][3] = usager.getDateNais();
-                data[i][4] = usager.getSexe();
-                data[i][5] = usager.getTel();
-                data[i][6] = usager.getAdresse();
+                Oeuvre oeuvre = listOeuvres.get(i);
+                data[i][0] = oeuvre.getId();
+                data[i][1] = oeuvre.getTitre();
+                data[i][2] = oeuvre.getAuteur();
+                data[i][3] = oeuvre.getCategorie();
+                data[i][4] = oeuvre.getClass().getSimpleName();
+                data[i][5] = oeuvre.getExamplairesOeuvre().size();
+                data[i][6] = oeuvre.getNbResa();
             }
             ModelTableau model = new ModelTableau(data, titre);
-            tableListeUsager.setModel(model);
-            tableListeUsager.setRowHeight(30);
+            tableListeOeuvre.setModel(model);
+            tableListeOeuvre.setRowHeight(30);
         } else {
             //afficher tableau vide
-            Object data[][] = new Object[listUsagers.size()][titre.length];
+            Object data[][] = new Object[1][titre.length];
             ModelTableau model = new ModelTableau(data, titre);
-            tableListeUsager.setModel(model);
-            tableListeUsager.setRowHeight(1);
+            tableListeOeuvre.setModel(model);
+            tableListeOeuvre.setRowHeight(1);
         }
-    }
-
-    private void fillListeUsager(String sql, Object param[], String titre[]) {
-        Object data[][];
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try {
-            preparedStatement = initialiseRequetePreparee(DBConnection.getConnection(),
-                    sql, param);
-            resultSet = preparedStatement.executeQuery();
-            ResultSetMetaData resultMeta = resultSet.getMetaData();
-            int nbreColumn = resultMeta.getColumnCount();
-
-//            Pour récupérer le nombre total de ligne on se place sur la
-//            dernière puis on revient avant la première pour parcourir
-            resultSet.last();
-            int nbreRow = resultSet.getRow();
-            resultSet.beforeFirst();
-            data = new Object[nbreRow][nbreColumn];
-
-            int nbreLine = 0;
-            while (resultSet.next()) {
-                for (int i = 1; i <= resultMeta.getColumnCount(); i++) {
-                    data[nbreLine][i - 1] = resultSet.getObject(i);
-                }
-                nbreLine++;
-            }
-
-            if (nbreLine != 0) {
-                ModelTableau model = new ModelTableau(data, titre);
-                tableListeUsager.setModel(model);
-                tableListeUsager.setRowHeight(30);
-            } else {
-                //afficher tableau vide
-                data = new Object[1][titre.length];
-                ModelTableau model = new ModelTableau(data, titre);
-                tableListeUsager.setModel(model);
-                tableListeUsager.setRowHeight(1);
-            }
-
-        } catch (SQLException e) {
-            System.out.println("IHM.GestionUsager.fillListeUsager()");
-        } catch (BibalExceptions e) {
-            System.out.println("IHM.GestionUsager.fillListeUsager()");
-        } finally {
-            closeStatementResultSet(preparedStatement, resultSet);
-        }
-    }
-
-    private void clearField() {
-//        nomField.setText("");
-//        prenomField.setText("");
-//        adresseField.setText("");
-//        telField.setText("");
-    }
-
-    private void setIdentifiant() {
-//        PreparedStatement preparedStatement = null;
-//        ResultSet resultSet = null;
-//        try {
-//            final String SQL_SELECT_ID = "SELECT id FROM usager ORDER BY id DESC LIMIT 1";
-//            preparedStatement = initialiseRequetePreparee(DBConnection.getConnection(),
-//                    SQL_SELECT_ID, new Object[0]);
-//            resultSet = preparedStatement.executeQuery();
-//            int identifiant = 1;
-//            if (resultSet.first()) {
-//                identifiant = resultSet.getInt("id");
-//            }
-//            identifiantField.setText((identifiant + 1) + "");
-//        } catch (SQLException | BibalExceptions e) {
-//            JOptionPane.showMessageDialog(null, "Erreurs d'accès à la base de données",
-//                    "Erreurs", JOptionPane.ERROR_MESSAGE);
-//        } finally {
-//            closeStatementResultSet(preparedStatement, resultSet);
-//        }
+        modifierBouton.setEnabled(false);
+        supprimerButton.setEnabled(false);
+        exemplaireButton.setEnabled(false);
     }
 
     @Override
@@ -524,14 +478,22 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-//        int row = tableListeUsager.getSelectedRow();
-//        int nbreCol = tableListeUsager.getColumnCount();
-//
-//        Object dataLigneSelected[] = new Object[nbreCol];
-//        if (row >= 0) {
-//            for (int i = 0; i < nbreCol; i++) {
-//                dataLigneSelected[i] = tableListeUsager.getModel().getValueAt(row, i);
-//            }
+        int row = tableListeOeuvre.getSelectedRow();
+        int nbreCol = tableListeOeuvre.getColumnCount();
+
+        dataLigneSelected = new Object[nbreCol];
+        if (row >= 0) {
+            for (int i = 0; i < nbreCol; i++) {
+                dataLigneSelected[i] = tableListeOeuvre.getModel().getValueAt(row, i);
+            }
+            modifierBouton.setEnabled(true);
+            supprimerButton.setEnabled(true);
+            exemplaireButton.setEnabled(true);
+        } else {
+            modifierBouton.setEnabled(false);
+            supprimerButton.setEnabled(false);
+            exemplaireButton.setEnabled(true);
+        }
 //            identifiantField.setText(dataLigneSelected[0].toString());
 //            nomField.setText(dataLigneSelected[1].toString());
 //            prenomField.setText(dataLigneSelected[2].toString());
@@ -601,23 +563,24 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
         });
     }
 
+    private Object dataLigneSelected[];
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton RecherchBouton;
     private javax.swing.JComboBox RecherchCombo;
     private javax.swing.JFormattedTextField RecherchField;
     private javax.swing.JLabel RecherchParLabel;
+    private javax.swing.JButton afficherButton;
     private javax.swing.JButton ajouterBouton;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton exemplaireButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton modifierBouton;
-    private javax.swing.JPanel panListeUsager;
+    private javax.swing.JPanel panListeOeuvre;
     private javax.swing.JPanel panRecherch;
     private javax.swing.JButton retourButton;
     private javax.swing.JButton supprimerButton;
-    private javax.swing.JTable tableListeUsager;
+    private javax.swing.JTable tableListeOeuvre;
     // End of variables declaration//GEN-END:variables
 }

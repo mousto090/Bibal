@@ -229,7 +229,7 @@ public class Usager {
     public Usager findById(int id) throws BibalExceptions {
         final String SQL_SELECT_BY_ID = "SELECT * FROM usager WHERE id = ?";
         ArrayList<Usager> usagers = find(SQL_SELECT_BY_ID, id);
-        return usagers.isEmpty() ? null : usagers.get(0);
+        return (usagers == null) ? null : usagers.get(0);
     }
 
     /**
@@ -241,7 +241,8 @@ public class Usager {
      */
     public ArrayList<Usager> findByNom(String nom) throws BibalExceptions {
         final String SQL_SELECT_BY_NOM = "SELECT * FROM usager WHERE Nom = ?";
-        return find(SQL_SELECT_BY_NOM, nom);
+        ArrayList<Usager> usagers = find(SQL_SELECT_BY_NOM, nom);
+        return (usagers == null) ? null : usagers;
     }
 
     private ArrayList<Usager> find(String sql, Object... objets) throws BibalExceptions {

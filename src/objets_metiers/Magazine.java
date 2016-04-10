@@ -18,9 +18,13 @@ public class Magazine extends Oeuvre {
         this.categorie = categorie;
     }
 
-    public Magazine(int id, String titre, String auteur, String categorie, int nbResa) {
+    public Magazine(int id, String titre, String auteur, String categorie) {
         this(titre, auteur, categorie);
         this.id = id;
+    }
+
+    public Magazine(int id, String titre, String auteur, String categorie, int nbResa) {
+        this(id, titre, auteur, categorie);
         this.nbResa = nbResa;
     }
 

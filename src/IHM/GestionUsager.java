@@ -496,11 +496,13 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
             JOptionPane.showMessageDialog(null, "Les modifications ont été enregistrées", "Informations", JOptionPane.INFORMATION_MESSAGE);
             setIdentifiant();
             clearField();
-            String titre[] = new String[]{"Identifiant", "Nom",
-                "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
-            final String REQUETE = "SELECT id, nom, prenom, dateNais, sexe, tel, adresse"
-                    + " FROM usager ORDER BY id DESC LIMIT 10";
-            fillListeUsager(REQUETE, new Object[0], titre);
+            ((ModelTableau) tableListeUsager.getModel()).
+                    fireTableRowsUpdated(tableListeUsager.getSelectedRow(),tableListeUsager.getSelectedRow());
+//            String titre[] = new String[]{"Identifiant", "Nom",
+//                "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
+//            final String REQUETE = "SELECT id, nom, prenom, dateNais, sexe, tel, adresse"
+//                    + " FROM usager ORDER BY id DESC LIMIT 10";
+//            fillListeUsager(REQUETE, new Object[0], titre);
 
             modifierBouton.setEnabled(false);
             supprimerButton.setEnabled(false);
@@ -523,11 +525,12 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
             JOptionPane.showMessageDialog(null, "L'enregistrement a bien été supprimé", "Informations", JOptionPane.INFORMATION_MESSAGE);
             setIdentifiant();
             clearField();
-            String titre[] = new String[]{"Identifiant", "Nom",
-                "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
-            final String REQUETE = "SELECT id, nom, prenom, dateNais, sexe, tel, adresse"
-                    + " FROM usager ORDER BY id DESC LIMIT 10";
-            fillListeUsager(REQUETE, new Object[0], titre);
+            ((ModelTableau) tableListeUsager.getModel()).removeRow(tableListeUsager.getSelectedRow());
+//            String titre[] = new String[]{"Identifiant", "Nom",
+//                "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
+//            final String REQUETE = "SELECT id, nom, prenom, dateNais, sexe, tel, adresse"
+//                    + " FROM usager ORDER BY id DESC LIMIT 10";
+//            fillListeUsager(REQUETE, new Object[0], titre);
 
             modifierBouton.setEnabled(false);
             supprimerButton.setEnabled(false);
@@ -574,20 +577,22 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
                 ArrayList<Usager> listUsagers = UsagerControl.getListUsagers();
                 fillUsagerJtable(listUsagers);
                 RecherchBouton.setEnabled(false);
+                RecherchField.setEnabled(false);
             } catch (BibalExceptions e) {
                 System.out.println("IHM.GestionUsager.RecherchComboActionPerformed() : Erreurs");
             }
         } else {
             RecherchBouton.setEnabled(true);
+            RecherchField.setEnabled(true);
         }
     }//GEN-LAST:event_RecherchComboActionPerformed
 
     private void fillUsagerJtable(ArrayList<Usager> listUsagers) {
         String titre[] = new String[]{"Identifiant", "Nom",
             "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
-        if (null != listUsagers) {
-            Object data[][] = new Object[listUsagers.size()][titre.length];
-            int nbLigne = listUsagers.size();
+        if (listUsagers.size() > 0) {
+            int nbLigne = (null == listUsagers.get(0)) ? 0 : listUsagers.size();
+            Object data[][] = new Object[nbLigne][titre.length];
             for (int i = 0; i < nbLigne; i++) {
                 Usager usager = listUsagers.get(i);
                 data[i][0] = usager.getId();
@@ -603,7 +608,7 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
             tableListeUsager.setRowHeight(30);
         } else {
             //afficher tableau vide
-            Object data[][] = new Object[listUsagers.size()][titre.length];
+            Object data[][] = new Object[1][titre.length];
             ModelTableau model = new ModelTableau(data, titre);
             tableListeUsager.setModel(model);
             tableListeUsager.setRowHeight(1);

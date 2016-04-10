@@ -22,25 +22,25 @@ import objets_metiers.Oeuvre;
  *
  * @author Jalloh
  */
-public class AjoutOeuvre extends javax.swing.JDialog {
+public class ModificationOeuvre extends javax.swing.JDialog {
 
     /**
      * Creates new form AjoutOe
      */
-    public AjoutOeuvre(java.awt.Frame parent, boolean modal) {
+    public ModificationOeuvre(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        setIdentifiant(); 
-
     }
     
-//    public AjoutOeuvre(java.awt.Frame parent, boolean modal,
-//            String titre) {
-//        super(parent, modal);
-//        initComponents();
-//        titleLabel.setText(titre);
-//
-//    }
+    public ModificationOeuvre(java.awt.Frame parent, boolean modal,
+            Oeuvre oeuvre, String typeOeuvre) {
+        this(parent, modal);
+        typeOeuvreCombo.setSelectedItem(typeOeuvre);
+        identifiantField.setText(oeuvre.getId()+"");
+        titreField.setText(oeuvre.getTitre());
+        auteurField.setText(oeuvre.getAuteur());
+        categorieField.setText(oeuvre.getCategorie());
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -64,7 +64,7 @@ public class AjoutOeuvre extends javax.swing.JDialog {
         typeOeuvreCombo = new javax.swing.JComboBox();
         categorieLabel = new javax.swing.JLabel();
         categorieField = new javax.swing.JFormattedTextField();
-        ajouterBouton = new javax.swing.JButton();
+        modifierBouton = new javax.swing.JButton();
         annulerBouton = new javax.swing.JButton();
         titleLabel = new javax.swing.JLabel();
 
@@ -122,11 +122,11 @@ public class AjoutOeuvre extends javax.swing.JDialog {
 
         categorieField.setPreferredSize(new java.awt.Dimension(123, 26));
 
-        ajouterBouton.setFont(new java.awt.Font("Times New Roman", 1, 16)); // NOI18N
-        ajouterBouton.setText("Ajouter");
-        ajouterBouton.addActionListener(new java.awt.event.ActionListener() {
+        modifierBouton.setFont(new java.awt.Font("Times New Roman", 1, 16)); // NOI18N
+        modifierBouton.setText("Modifier");
+        modifierBouton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ajouterBoutonActionPerformed(evt);
+                modifierBoutonActionPerformed(evt);
             }
         });
 
@@ -163,7 +163,7 @@ public class AjoutOeuvre extends javax.swing.JDialog {
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(annulerBouton)
                         .addGap(34, 34, 34)
-                        .addComponent(ajouterBouton)))
+                        .addComponent(modifierBouton)))
                 .addContainerGap())
         );
         panAjoutBasLayout.setVerticalGroup(
@@ -191,7 +191,7 @@ public class AjoutOeuvre extends javax.swing.JDialog {
                     .addComponent(categorieField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(41, 41, 41)
                 .addGroup(panAjoutBasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(ajouterBouton)
+                    .addComponent(modifierBouton)
                     .addComponent(annulerBouton))
                 .addGap(19, 19, 19))
         );
@@ -212,7 +212,7 @@ public class AjoutOeuvre extends javax.swing.JDialog {
         );
 
         titleLabel.setFont(new java.awt.Font("Times New Roman", 1, 36)); // NOI18N
-        titleLabel.setText("Ajouter Oeuvre");
+        titleLabel.setText("Modification");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -223,7 +223,7 @@ public class AjoutOeuvre extends javax.swing.JDialog {
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(79, 79, 79))
+                .addGap(64, 64, 64))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -258,32 +258,26 @@ public class AjoutOeuvre extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_typeOeuvreComboActionPerformed
 
-    private void ajouterBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ajouterBoutonActionPerformed
+    private void modifierBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifierBoutonActionPerformed
 
         try {
+            int id = Integer.parseInt(identifiantField.getText());
             String titre = titreField.getText();
             String auteur = auteurField.getText();
             String categorie = categorieField.getText();
             String typeOeuvre = typeOeuvreCombo.getSelectedItem().toString();
-            //OeuvreControl.ajouter("Livre 1", "Auteur 1", "Categorie 1", typeOeuvre);
             if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
-                OeuvreControl.ajouter(new Magazine(titre, auteur, categorie));
+                OeuvreControl.modifier(new Magazine(id,titre, auteur, categorie));
             } else {
-                OeuvreControl.ajouter(new Livre(titre, auteur, categorie));
+                OeuvreControl.modifier(new Livre(id,titre, auteur, categorie));
             }
-            JOptionPane.showMessageDialog(null, "Oeuvre ajoutée avec succès", "Informations", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Oeuvre modifiée avec succès", "Informations", JOptionPane.INFORMATION_MESSAGE);
             setIdentifiant();
-            clearField();
-//            String titre[] = new String[]{"Identifiant", "Nom",
-//                "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
-//            final String REQUETE = "SELECT id, nom, prenom, dateNais, sexe, tel, adresse"
-//                    + " FROM usager ORDER BY id DESC LIMIT 10";
-//            fillListeUsager(REQUETE, new Object[0], titre);
 
         } catch (BibalExceptions ex) {
             ex.printStackTrace();
         }
-    }//GEN-LAST:event_ajouterBoutonActionPerformed
+    }//GEN-LAST:event_modifierBoutonActionPerformed
 
     private void annulerBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerBoutonActionPerformed
         this.dispose();
@@ -306,21 +300,23 @@ public class AjoutOeuvre extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AjoutOeuvre.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ModificationOeuvre.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AjoutOeuvre.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ModificationOeuvre.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AjoutOeuvre.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ModificationOeuvre.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AjoutOeuvre.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ModificationOeuvre.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                AjoutOeuvre dialog = new AjoutOeuvre(new javax.swing.JFrame(), true);
+                ModificationOeuvre dialog = new ModificationOeuvre(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -359,7 +355,6 @@ public class AjoutOeuvre extends javax.swing.JDialog {
         }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton ajouterBouton;
     private javax.swing.JButton annulerBouton;
     private javax.swing.JFormattedTextField auteurField;
     private javax.swing.JLabel auteurLabel;
@@ -368,6 +363,7 @@ public class AjoutOeuvre extends javax.swing.JDialog {
     private javax.swing.JFormattedTextField identifiantField;
     private javax.swing.JLabel identifiantLabel;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JButton modifierBouton;
     private javax.swing.JPanel panAjoutBas;
     private javax.swing.JPanel panAjoutOeuvre;
     private javax.swing.JLabel titleLabel;

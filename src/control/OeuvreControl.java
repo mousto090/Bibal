@@ -25,6 +25,9 @@ public class OeuvreControl {
         oeuvre.modifier(oeuvre);
     }
 
+    public static void supprimer(Oeuvre oeuvre) throws BibalExceptions {
+        oeuvre.delete(oeuvre);
+    }
     public static Oeuvre findById(int id) throws BibalExceptions {
         Oeuvre oeuvre = new Oeuvre();
         return oeuvre.findById(id);
@@ -34,4 +37,8 @@ public class OeuvreControl {
         //Oeuvre oeuvre = new Oeuvre();
         return new Oeuvre().findByTitre(titre);
     }
+    public static ArrayList<Oeuvre> getListOeuvres() throws BibalExceptions {
+        return new Oeuvre().getListOeuvres();
+    }
+    
 }

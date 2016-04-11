@@ -6,7 +6,6 @@
 package Utility;
 
 import java.util.Arrays;
-import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -65,21 +64,29 @@ public class ModelTableau extends AbstractTableModel {
         //Notifier la table
         fireTableRowsDeleted(row, row);
     }
-//    Programmer ces methodes pour mettre à jour les jtable
-//    public void addRow(String value)
-//    {
-//        fireTableRowsInserted(filters.size() - 1, filters.size() - 1);
-//        int row = filters.size() -1 ;
-//        int col = 1;
-//        setValueAt(value, row, col);            
-//    }
-//    
-//    public void updateRow(String value)
-//    {
-//        fireTableRowsInserted(filters.size() - 1, filters.size() - 1);
-//        int row = filters.size() -1 ;
-//        int col = 1;
-//        setValueAt(value, row, col);            
-//    }
+
+    public void addRow(Object values[]) {
+        int nbLigne = data.length;
+        int nbCol = title.length;
+        if (nbLigne == 0) {
+            data = new Object[1][nbCol];
+            data[0] = Arrays.copyOfRange(values, 0, nbCol);
+            nbLigne++;
+        } else {
+            Object resultat[][] = new Object[nbLigne + 1][nbCol];
+//            ajout de la ligne au debut de la table
+            resultat[0] = Arrays.copyOfRange(values, 0, nbCol);
+            for (int i = 0; i < nbLigne; i++) {
+                resultat[i + 1] = Arrays.copyOfRange(data[i], 0, nbCol);
+            }
+            data = resultat;
+        }
+        fireTableRowsInserted(0, 0);
+    }
+
+    public void updateRow(Object values[], int row) {
+        data[row] = Arrays.copyOfRange(values, 0, title.length);
+        fireTableRowsUpdated(row, row);
+    }
 
 }

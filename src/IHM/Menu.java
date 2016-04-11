@@ -18,10 +18,10 @@ public class Menu extends javax.swing.JFrame {
      * Creates new form Menu
      */
     public Menu() {
-        
+
         initComponents();
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+        this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
         setResizable(false);
     }
 
@@ -35,9 +35,9 @@ public class Menu extends javax.swing.JFrame {
     private void initComponents() {
 
         GestionUsager = new javax.swing.JButton();
-        GestionExamplairesOeuvres = new javax.swing.JButton();
+        GestionOeuvresExamplaires = new javax.swing.JButton();
         Deconnecter = new javax.swing.JButton();
-        GestionReservationsEmprunts1 = new javax.swing.JButton();
+        GestionReservationsEmprunts = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(410, 410));
@@ -55,15 +55,15 @@ public class Menu extends javax.swing.JFrame {
         getContentPane().add(GestionUsager);
         GestionUsager.setBounds(50, 20, 300, 68);
 
-        GestionExamplairesOeuvres.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
-        GestionExamplairesOeuvres.setText("Gestion Examplaires et Oeuvres");
-        GestionExamplairesOeuvres.addActionListener(new java.awt.event.ActionListener() {
+        GestionOeuvresExamplaires.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
+        GestionOeuvresExamplaires.setText("Gestion Oeuvres et Examplaires");
+        GestionOeuvresExamplaires.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                GestionExamplairesOeuvresActionPerformed(evt);
+                GestionOeuvresExamplairesActionPerformed(evt);
             }
         });
-        getContentPane().add(GestionExamplairesOeuvres);
-        GestionExamplairesOeuvres.setBounds(50, 110, 300, 68);
+        getContentPane().add(GestionOeuvresExamplaires);
+        GestionOeuvresExamplaires.setBounds(50, 110, 300, 68);
 
         Deconnecter.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         Deconnecter.setText("Deconnecter");
@@ -75,46 +75,42 @@ public class Menu extends javax.swing.JFrame {
         getContentPane().add(Deconnecter);
         Deconnecter.setBounds(50, 290, 300, 68);
 
-        GestionReservationsEmprunts1.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
-        GestionReservationsEmprunts1.setText("Gestion Reservations et Emprunts");
-        GestionReservationsEmprunts1.addActionListener(new java.awt.event.ActionListener() {
+        GestionReservationsEmprunts.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
+        GestionReservationsEmprunts.setText("Gestion Reservations et Emprunts");
+        GestionReservationsEmprunts.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                GestionReservationsEmprunts1ActionPerformed(evt);
+                GestionReservationsEmpruntsActionPerformed(evt);
             }
         });
-        getContentPane().add(GestionReservationsEmprunts1);
-        GestionReservationsEmprunts1.setBounds(50, 200, 300, 68);
+        getContentPane().add(GestionReservationsEmprunts);
+        GestionReservationsEmprunts.setBounds(50, 200, 300, 68);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void GestionUsagerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GestionUsagerActionPerformed
-        // TODO add your handling code here:
-        GestionUsager gu=new GestionUsager();
+        GestionUsager gu = new GestionUsager();
         this.dispose();
         gu.setVisible(true);
     }//GEN-LAST:event_GestionUsagerActionPerformed
 
     private void DeconnecterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeconnecterActionPerformed
-        // TODO add your handling code here:
-        Authentification a=new Authentification();
+        Authentification a = new Authentification();
         this.dispose();
         a.setVisible(true);
     }//GEN-LAST:event_DeconnecterActionPerformed
 
-    private void GestionExamplairesOeuvresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GestionExamplairesOeuvresActionPerformed
-        // TODO add your handling code here:
-        GestionExamplairesOeuvres geo=new GestionExamplairesOeuvres();
+    private void GestionOeuvresExamplairesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GestionOeuvresExamplairesActionPerformed
+        GestionOeuvresExemplaires goe = new GestionOeuvresExemplaires();
         this.dispose();
-        geo.setVisible(true);
-    }//GEN-LAST:event_GestionExamplairesOeuvresActionPerformed
+        goe.setVisible(true);
+    }//GEN-LAST:event_GestionOeuvresExamplairesActionPerformed
 
-    private void GestionReservationsEmprunts1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GestionReservationsEmprunts1ActionPerformed
-        // TODO add your handling code here:
-        GestionReservationsEmprunts gre=new GestionReservationsEmprunts();
+    private void GestionReservationsEmpruntsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GestionReservationsEmpruntsActionPerformed
+        GestionReservationsEmprunts gre = new GestionReservationsEmprunts();
         this.dispose();
         gre.setVisible(true);
-    }//GEN-LAST:event_GestionReservationsEmprunts1ActionPerformed
+    }//GEN-LAST:event_GestionReservationsEmpruntsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -153,8 +149,8 @@ public class Menu extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Deconnecter;
-    private javax.swing.JButton GestionExamplairesOeuvres;
-    private javax.swing.JButton GestionReservationsEmprunts1;
+    private javax.swing.JButton GestionOeuvresExamplaires;
+    private javax.swing.JButton GestionReservationsEmprunts;
     private javax.swing.JButton GestionUsager;
     // End of variables declaration//GEN-END:variables
 }

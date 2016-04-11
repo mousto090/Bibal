@@ -6,13 +6,8 @@
 package IHM;
 
 import Utility.BibalExceptions;
-import Utility.DBConnection;
-import static Utility.Utility.closeStatementResultSet;
-import static Utility.Utility.initialiseRequetePreparee;
+import Utility.ModelTableau;
 import control.OeuvreControl;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import objets_metiers.Livre;
 import objets_metiers.Magazine;
@@ -110,11 +105,6 @@ public class ModificationOeuvre extends javax.swing.JDialog {
         typeOeuvreCombo.setFont(new java.awt.Font("Times New Roman", 1, 12)); // NOI18N
         typeOeuvreCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Livre", "Magazine" }));
         typeOeuvreCombo.setPreferredSize(new java.awt.Dimension(123, 26));
-        typeOeuvreCombo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                typeOeuvreComboActionPerformed(evt);
-            }
-        });
 
         categorieLabel.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         categorieLabel.setForeground(new java.awt.Color(0, 0, 255));
@@ -254,10 +244,6 @@ public class ModificationOeuvre extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void typeOeuvreComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_typeOeuvreComboActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_typeOeuvreComboActionPerformed
-
     private void modifierBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifierBoutonActionPerformed
 
         try {
@@ -271,8 +257,11 @@ public class ModificationOeuvre extends javax.swing.JDialog {
             } else {
                 OeuvreControl.modifier(new Livre(id,titre, auteur, categorie));
             }
+            ((ModelTableau) GestionOeuvresExemplaires.tableListeOeuvre.getModel())
+                    .updateRow(
+                    new Object[]{id, titre, auteur, categorie, typeOeuvre, 0, 0}, 
+                            GestionOeuvresExemplaires.tableListeOeuvre.getSelectedRow());
             JOptionPane.showMessageDialog(null, "Oeuvre modifiée avec succès", "Informations", JOptionPane.INFORMATION_MESSAGE);
-            setIdentifiant();
 
         } catch (BibalExceptions ex) {
             ex.printStackTrace();
@@ -326,33 +315,6 @@ public class ModificationOeuvre extends javax.swing.JDialog {
                 dialog.setVisible(true);
             }
         });
-    }
-
-    private void clearField() {
-        titreField.setText("");
-        auteurField.setText("");
-        categorieField.setText("");
-    }
-
-    private void setIdentifiant() {
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try {
-            final String SQL_SELECT_ID = "SELECT id FROM oeuvre ORDER BY id DESC LIMIT 1";
-            preparedStatement = initialiseRequetePreparee(DBConnection.getConnection(),
-                    SQL_SELECT_ID, new Object[0]);
-            resultSet = preparedStatement.executeQuery();
-            int identifiant = 1;
-            if (resultSet.first()) {
-                identifiant = resultSet.getInt("id");
-            }
-            identifiantField.setText((identifiant + 1) + "");
-        } catch (SQLException | BibalExceptions e) {
-            JOptionPane.showMessageDialog(null, "Erreurs d'accès à la base de données",
-                    "Erreurs", JOptionPane.ERROR_MESSAGE);
-        } finally {
-            closeStatementResultSet(preparedStatement, resultSet);
-        }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton annulerBouton;

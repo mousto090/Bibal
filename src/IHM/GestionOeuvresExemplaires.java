@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
 import objets_metiers.Livre;
 import objets_metiers.Magazine;
 import objets_metiers.Oeuvre;
@@ -27,18 +25,23 @@ import objets_metiers.Oeuvre;
  *
  * @author SIMO
  */
-public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
+public class GestionOeuvresExemplaires extends javax.swing.JFrame implements MouseListener {
 
     /**
      * Creates new form GestionUsager
      */
-    public GestionOeuvre() {
+    public GestionOeuvresExemplaires() {
 
         initComponents();
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         //this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
         setResizable(false);
         tableListeOeuvre.addMouseListener(this);
+        tableListeOeuvre.addMouseListener(this);
+        tableListeOeuvre.setModel(new ModelTableau(new Object[0][0],
+                new String[]{"ID", "Titre",
+                    "Auteur", "Catégorie", "Type", "Exemplaires", "Réservations"}));
+        tableListeOeuvre.setRowHeight(30);
     }
 
     /**
@@ -116,7 +119,7 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
                         .addComponent(RecherchParLabel)
                         .addGap(41, 41, 41)
                         .addComponent(RecherchCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(86, Short.MAX_VALUE))
+                .addContainerGap(93, Short.MAX_VALUE))
         );
         panRecherchLayout.setVerticalGroup(
             panRecherchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -171,7 +174,7 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
         );
         panListeOeuvreLayout.setVerticalGroup(
             panListeOeuvreLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
         );
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
@@ -205,6 +208,11 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
         exemplaireButton.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         exemplaireButton.setText("Exemplaire");
         exemplaireButton.setEnabled(false);
+        exemplaireButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exemplaireButtonActionPerformed(evt);
+            }
+        });
 
         supprimerButton.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         supprimerButton.setText("Supprimer");
@@ -243,7 +251,7 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(ajouterBouton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 58, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
                 .addComponent(afficherButton)
                 .addGap(43, 43, 43)
                 .addComponent(modifierBouton)
@@ -253,43 +261,42 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
                 .addComponent(exemplaireButton)
                 .addGap(45, 45, 45)
                 .addComponent(retourButton)
-                .addGap(28, 28, 28))
+                .addGap(33, 33, 33))
         );
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 36)); // NOI18N
-        jLabel1.setText("Gestion des Oeuvres et des Exemplaires");
+        jLabel1.setText("Gestion des Oeuvres et Exemplaires");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(panRecherch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(panListeOeuvre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(79, 79, 79)
-                        .addComponent(jLabel1)))
-                .addContainerGap())
+                    .addComponent(panRecherch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panListeOeuvre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(3, 3, 3))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(127, 127, 127)
+                .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(28, Short.MAX_VALUE)
+                .addGap(31, 31, 31)
                 .addComponent(jLabel1)
-                .addGap(36, 36, 36)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGap(10, 10, 10)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(panRecherch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(panListeOeuvre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                        .addComponent(panListeOeuvre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(3, 3, 3))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -303,10 +310,12 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 585, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 554, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        setSize(new java.awt.Dimension(837, 624));
+        setSize(new java.awt.Dimension(837, 584));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -431,10 +440,16 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
             }
 
         } catch (BibalExceptions ex) {
-            Logger.getLogger(GestionOeuvre.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GestionOeuvresExemplaires.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }//GEN-LAST:event_supprimerButtonActionPerformed
+
+    private void exemplaireButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exemplaireButtonActionPerformed
+    
+        Exemplaires exemplaires = new Exemplaires(this, true);
+        exemplaires.setLocationRelativeTo(null);
+        exemplaires.setVisible(true);
+    }//GEN-LAST:event_exemplaireButtonActionPerformed
 
     private void fillOeuvreJtable(ArrayList<Oeuvre> listOeuvres) {
         String titre[] = new String[]{"ID", "Titre",
@@ -538,14 +553,22 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(GestionOeuvre.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(GestionOeuvresExemplaires.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(GestionOeuvre.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(GestionOeuvresExemplaires.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(GestionOeuvre.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(GestionOeuvresExemplaires.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(GestionOeuvre.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(GestionOeuvresExemplaires.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -558,7 +581,7 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new GestionOeuvre().setVisible(true);
+                new GestionOeuvresExemplaires().setVisible(true);
             }
         });
     }
@@ -581,6 +604,6 @@ public class GestionOeuvre extends javax.swing.JFrame implements MouseListener {
     private javax.swing.JPanel panRecherch;
     private javax.swing.JButton retourButton;
     private javax.swing.JButton supprimerButton;
-    private javax.swing.JTable tableListeOeuvre;
+    public static javax.swing.JTable tableListeOeuvre;
     // End of variables declaration//GEN-END:variables
 }

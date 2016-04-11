@@ -10,6 +10,7 @@ import Utility.DBConnection;
 import Utility.ModelTableau;
 import static Utility.Utility.YMDtoDMY;
 import static Utility.Utility.closeStatementResultSet;
+import static Utility.Utility.dateToStr;
 import static Utility.Utility.formatDate;
 import static Utility.Utility.initialiseRequetePreparee;
 import control.UsagerControl;
@@ -25,6 +26,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.JOptionPane;
+import javax.swing.table.TableModel;
 import objets_metiers.Usager;
 
 /**
@@ -45,6 +47,10 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
         setIdentifiant();
 
         tableListeUsager.addMouseListener(this);
+        tableListeUsager.setModel(new ModelTableau(new Object[0][0],
+                new String[]{"Identifiant", "Nom",
+                    "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"}));
+        tableListeUsager.setRowHeight(30);
     }
 
     /**
@@ -456,6 +462,7 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
 
     private void ajouterBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ajouterBoutonActionPerformed
         try {
+            int identifiant = Integer.parseInt(identifiantField.getText());
             String nom = nomField.getText();
             String prenom = prenomField.getText();
             Date dateNais = dateNaisPicker.getDate();
@@ -466,11 +473,8 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
             JOptionPane.showMessageDialog(null, "Usager ajouté avec succès", "Informations", JOptionPane.INFORMATION_MESSAGE);
             setIdentifiant();
             clearField();
-            String titre[] = new String[]{"Identifiant", "Nom",
-                "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
-            final String REQUETE = "SELECT id, nom, prenom, dateNais, sexe, tel, adresse"
-                    + " FROM usager ORDER BY id DESC LIMIT 10";
-            fillListeUsager(REQUETE, new Object[0], titre);
+            ((ModelTableau) tableListeUsager.getModel()).addRow(
+                    new Object[]{identifiant, nom, prenom, dateToStr(dateNais), sexe, tel, adresse});
 
         } catch (BibalExceptions ex) {
             ex.printStackTrace();
@@ -496,8 +500,11 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
             JOptionPane.showMessageDialog(null, "Les modifications ont été enregistrées", "Informations", JOptionPane.INFORMATION_MESSAGE);
             setIdentifiant();
             clearField();
-            ((ModelTableau) tableListeUsager.getModel()).
-                    fireTableRowsUpdated(tableListeUsager.getSelectedRow(),tableListeUsager.getSelectedRow());
+            ((ModelTableau) tableListeUsager.getModel()).updateRow(
+                    new Object[]{identifiant, nom, prenom, dateToStr(dateNais), sexe, tel, adresse}, 
+                    tableListeUsager.getSelectedRow());
+//            ((ModelTableau) tableListeUsager.getModel()).
+//                    fireTableRowsUpdated(tableListeUsager.getSelectedRow(), tableListeUsager.getSelectedRow());
 //            String titre[] = new String[]{"Identifiant", "Nom",
 //                "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
 //            final String REQUETE = "SELECT id, nom, prenom, dateNais, sexe, tel, adresse"
@@ -526,12 +533,6 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
             setIdentifiant();
             clearField();
             ((ModelTableau) tableListeUsager.getModel()).removeRow(tableListeUsager.getSelectedRow());
-//            String titre[] = new String[]{"Identifiant", "Nom",
-//                "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
-//            final String REQUETE = "SELECT id, nom, prenom, dateNais, sexe, tel, adresse"
-//                    + " FROM usager ORDER BY id DESC LIMIT 10";
-//            fillListeUsager(REQUETE, new Object[0], titre);
-
             modifierBouton.setEnabled(false);
             supprimerButton.setEnabled(false);
             ajouterBouton.setEnabled(true);
@@ -612,53 +613,6 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
             ModelTableau model = new ModelTableau(data, titre);
             tableListeUsager.setModel(model);
             tableListeUsager.setRowHeight(1);
-        }
-    }
-
-    private void fillListeUsager(String sql, Object param[], String titre[]) {
-        Object data[][];
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try {
-            preparedStatement = initialiseRequetePreparee(DBConnection.getConnection(),
-                    sql, param);
-            resultSet = preparedStatement.executeQuery();
-            ResultSetMetaData resultMeta = resultSet.getMetaData();
-            int nbreColumn = resultMeta.getColumnCount();
-
-//            Pour récupérer le nombre total de ligne on se place sur la
-//            dernière puis on revient avant la première pour parcourir
-            resultSet.last();
-            int nbreRow = resultSet.getRow();
-            resultSet.beforeFirst();
-            data = new Object[nbreRow][nbreColumn];
-
-            int nbreLine = 0;
-            while (resultSet.next()) {
-                for (int i = 1; i <= resultMeta.getColumnCount(); i++) {
-                    data[nbreLine][i - 1] = resultSet.getObject(i);
-                }
-                nbreLine++;
-            }
-
-            if (nbreLine != 0) {
-                ModelTableau model = new ModelTableau(data, titre);
-                tableListeUsager.setModel(model);
-                tableListeUsager.setRowHeight(30);
-            } else {
-                //afficher tableau vide
-                data = new Object[1][titre.length];
-                ModelTableau model = new ModelTableau(data, titre);
-                tableListeUsager.setModel(model);
-                tableListeUsager.setRowHeight(1);
-            }
-
-        } catch (SQLException e) {
-            System.out.println("IHM.GestionUsager.fillListeUsager()");
-        } catch (BibalExceptions e) {
-            System.out.println("IHM.GestionUsager.fillListeUsager()");
-        } finally {
-            closeStatementResultSet(preparedStatement, resultSet);
         }
     }
 

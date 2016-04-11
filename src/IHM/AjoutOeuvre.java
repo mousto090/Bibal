@@ -7,6 +7,7 @@ package IHM;
 
 import Utility.BibalExceptions;
 import Utility.DBConnection;
+import Utility.ModelTableau;
 import static Utility.Utility.closeStatementResultSet;
 import static Utility.Utility.initialiseRequetePreparee;
 import control.OeuvreControl;
@@ -16,7 +17,6 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import objets_metiers.Livre;
 import objets_metiers.Magazine;
-import objets_metiers.Oeuvre;
 
 /**
  *
@@ -24,24 +24,13 @@ import objets_metiers.Oeuvre;
  */
 public class AjoutOeuvre extends javax.swing.JDialog {
 
-    /**
-     * Creates new form AjoutOe
-     */
+    
     public AjoutOeuvre(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         setIdentifiant(); 
 
     }
-    
-//    public AjoutOeuvre(java.awt.Frame parent, boolean modal,
-//            String titre) {
-//        super(parent, modal);
-//        initComponents();
-//        titleLabel.setText(titre);
-//
-//    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -82,7 +71,7 @@ public class AjoutOeuvre extends javax.swing.JDialog {
 
         typeOeuvreLabel.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         typeOeuvreLabel.setForeground(new java.awt.Color(0, 0, 255));
-        typeOeuvreLabel.setText("Type de l'oeuvre : ");
+        typeOeuvreLabel.setText("Type de l'oeuvre   ");
 
         identifiantLabel.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         identifiantLabel.setForeground(new java.awt.Color(0, 0, 255));
@@ -212,7 +201,7 @@ public class AjoutOeuvre extends javax.swing.JDialog {
         );
 
         titleLabel.setFont(new java.awt.Font("Times New Roman", 1, 36)); // NOI18N
-        titleLabel.setText("Ajouter Oeuvre");
+        titleLabel.setText("Ajout Oeuvre");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -220,10 +209,10 @@ public class AjoutOeuvre extends javax.swing.JDialog {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(panAjoutOeuvre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(10, 10, 10))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(79, 79, 79))
+                .addGap(74, 74, 74))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -254,32 +243,25 @@ public class AjoutOeuvre extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void typeOeuvreComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_typeOeuvreComboActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_typeOeuvreComboActionPerformed
-
     private void ajouterBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ajouterBoutonActionPerformed
 
         try {
+            int identifiant = Integer.parseInt(identifiantField.getText());
             String titre = titreField.getText();
             String auteur = auteurField.getText();
             String categorie = categorieField.getText();
             String typeOeuvre = typeOeuvreCombo.getSelectedItem().toString();
-            //OeuvreControl.ajouter("Livre 1", "Auteur 1", "Categorie 1", typeOeuvre);
             if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
                 OeuvreControl.ajouter(new Magazine(titre, auteur, categorie));
             } else {
                 OeuvreControl.ajouter(new Livre(titre, auteur, categorie));
             }
+            ((ModelTableau) GestionOeuvresExemplaires.tableListeOeuvre.getModel())
+                    .addRow(
+                    new Object[]{identifiant, titre, auteur, categorie, typeOeuvre, 0, 0});
             JOptionPane.showMessageDialog(null, "Oeuvre ajoutée avec succès", "Informations", JOptionPane.INFORMATION_MESSAGE);
             setIdentifiant();
             clearField();
-//            String titre[] = new String[]{"Identifiant", "Nom",
-//                "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
-//            final String REQUETE = "SELECT id, nom, prenom, dateNais, sexe, tel, adresse"
-//                    + " FROM usager ORDER BY id DESC LIMIT 10";
-//            fillListeUsager(REQUETE, new Object[0], titre);
-
         } catch (BibalExceptions ex) {
             ex.printStackTrace();
         }
@@ -288,6 +270,10 @@ public class AjoutOeuvre extends javax.swing.JDialog {
     private void annulerBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerBoutonActionPerformed
         this.dispose();
     }//GEN-LAST:event_annulerBoutonActionPerformed
+
+    private void typeOeuvreComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_typeOeuvreComboActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_typeOeuvreComboActionPerformed
 
     /**
      * @param args the command line arguments

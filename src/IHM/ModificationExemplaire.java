@@ -5,18 +5,27 @@
  */
 package IHM;
 
+import Utility.BibalExceptions;
+import Utility.ModelTableau;
+import control.ExemplaireControl;
+import javax.swing.JOptionPane;
+import objets_metiers.Exemplaire;
+
 /**
  *
  * @author Jalloh
  */
 public class ModificationExemplaire extends javax.swing.JDialog {
 
-    /**
-     * Creates new form AjoutExemplaire
-     */
     public ModificationExemplaire(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+    }
+
+    public ModificationExemplaire(java.awt.Frame parent, boolean modal, Exemplaire exemplaire) {
+        this(parent, modal);
+        identifiantField.setText(exemplaire.getId() + "");
+        etatExemplaireCombo.setSelectedItem(exemplaire.getEtat());
     }
 
     /**
@@ -69,11 +78,6 @@ public class ModificationExemplaire extends javax.swing.JDialog {
         etatExemplaireCombo.setFont(new java.awt.Font("Times New Roman", 1, 12)); // NOI18N
         etatExemplaireCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Neuf", "Bon", "Vieux" }));
         etatExemplaireCombo.setPreferredSize(new java.awt.Dimension(123, 26));
-        etatExemplaireCombo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                etatExemplaireComboActionPerformed(evt);
-            }
-        });
 
         modifierBouton.setFont(new java.awt.Font("Times New Roman", 1, 16)); // NOI18N
         modifierBouton.setText("Modifier");
@@ -172,32 +176,20 @@ public class ModificationExemplaire extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void etatExemplaireComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_etatExemplaireComboActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_etatExemplaireComboActionPerformed
-
     private void modifierBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifierBoutonActionPerformed
 
-//        try {
-//            int identifiant = Integer.parseInt(identifiantField.getText());
-//            String titre = titreField.getText();
-//            String auteur = auteurField.getText();
-//            String categorie = categorieField.getText();
-//            String typeOeuvre = typeOeuvreCombo.getSelectedItem().toString();
-//            if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
-//                OeuvreControl.ajouter(new Magazine(titre, auteur, categorie));
-//            } else {
-//                OeuvreControl.ajouter(new Livre(titre, auteur, categorie));
-//            }
-//            ((ModelTableau) GestionOeuvresExemplaires.tableListeOeuvre.getModel())
-//            .addRow(
-//                new Object[]{identifiant, titre, auteur, categorie, typeOeuvre, 0, 0});
-//            JOptionPane.showMessageDialog(null, "Oeuvre ajoutée avec succès", "Informations", JOptionPane.INFORMATION_MESSAGE);
-//            setIdentifiant();
-//            clearField();
-//        } catch (BibalExceptions ex) {
-//            ex.printStackTrace();
-//        }
+        try {
+            int identifiant = Integer.parseInt(identifiantField.getText());
+            String etatExemplaire = etatExemplaireCombo.getSelectedItem().toString();
+            ExemplaireControl.modifier(new Exemplaire(identifiant, etatExemplaire));
+            ((ModelTableau) Exemplaires.tableExemplaires.getModel()).
+                    updateRow(
+                            new Object[]{identifiant, etatExemplaire},
+                            Exemplaires.tableExemplaires.getSelectedRow());
+            JOptionPane.showMessageDialog(null, "Modifications enregistrées avec succès", "Informations", JOptionPane.INFORMATION_MESSAGE);
+        } catch (BibalExceptions ex) {
+            ex.printStackTrace();
+        }
     }//GEN-LAST:event_modifierBoutonActionPerformed
 
     private void annulerBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerBoutonActionPerformed

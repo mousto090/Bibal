@@ -5,6 +5,18 @@
  */
 package IHM;
 
+import Utility.BibalExceptions;
+import Utility.DBConnection;
+import Utility.ModelTableau;
+import static Utility.Utility.closeStatementResultSet;
+import static Utility.Utility.initialiseRequetePreparee;
+import control.ExemplaireControl;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import objets_metiers.Oeuvre;
+
 /**
  *
  * @author Jalloh
@@ -17,6 +29,11 @@ public class AjoutExemplaire extends javax.swing.JDialog {
     public AjoutExemplaire(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        setIdentifiant();
+    }
+    public AjoutExemplaire(java.awt.Frame parent, boolean modal, Oeuvre oeuvre) {
+        this(parent, modal);
+        this.oeuvre = oeuvre;
     }
 
     /**
@@ -178,28 +195,42 @@ public class AjoutExemplaire extends javax.swing.JDialog {
 
     private void ajouterBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ajouterBoutonActionPerformed
 
-//        try {
-//            int identifiant = Integer.parseInt(identifiantField.getText());
-//            String titre = titreField.getText();
-//            String auteur = auteurField.getText();
-//            String categorie = categorieField.getText();
-//            String typeOeuvre = typeOeuvreCombo.getSelectedItem().toString();
-//            if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
-//                OeuvreControl.ajouter(new Magazine(titre, auteur, categorie));
-//            } else {
-//                OeuvreControl.ajouter(new Livre(titre, auteur, categorie));
-//            }
-//            ((ModelTableau) GestionOeuvresExemplaires.tableListeOeuvre.getModel())
-//            .addRow(
-//                new Object[]{identifiant, titre, auteur, categorie, typeOeuvre, 0, 0});
-//            JOptionPane.showMessageDialog(null, "Oeuvre ajoutée avec succès", "Informations", JOptionPane.INFORMATION_MESSAGE);
-//            setIdentifiant();
-//            clearField();
-//        } catch (BibalExceptions ex) {
-//            ex.printStackTrace();
-//        }
+        try {
+            String exemplaireId  = identifiantField.getText();
+            String etatExemplaire = etatExemplaireCombo.getSelectedItem().toString();
+            ExemplaireControl.ajouter(this.oeuvre, etatExemplaire);
+            ((ModelTableau) Exemplaires.tableExemplaires.getModel())
+                    .addRow(
+                            new Object[]{exemplaireId, etatExemplaire});
+            Exemplaires.setNbExemplaireLabelValue(
+                    (Integer.parseInt(Exemplaires.getNbExemplaireLabelValue())+1)+"");
+            JOptionPane.showMessageDialog(null, "Exemplaire ajouté avec succès", "Informations", JOptionPane.INFORMATION_MESSAGE);
+            setIdentifiant();
+        } catch (BibalExceptions ex) {
+            ex.printStackTrace();
+        }
     }//GEN-LAST:event_ajouterBoutonActionPerformed
 
+    private void setIdentifiant() {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            final String SQL_SELECT_ID = "SELECT id FROM exemplaire ORDER BY id DESC LIMIT 1";
+            preparedStatement = initialiseRequetePreparee(DBConnection.getConnection(),
+                    SQL_SELECT_ID, new Object[0]);
+            resultSet = preparedStatement.executeQuery();
+            int identifiant = 1;
+            if (resultSet.first()) {
+                identifiant = resultSet.getInt("id");
+            }
+            identifiantField.setText((identifiant + 1) + "");
+        } catch (SQLException | BibalExceptions e) {
+            JOptionPane.showMessageDialog(null, "Erreurs d'accès à la base de données",
+                    "Erreurs", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            closeStatementResultSet(preparedStatement, resultSet);
+        }
+    }
     private void annulerBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerBoutonActionPerformed
         this.dispose();
     }//GEN-LAST:event_annulerBoutonActionPerformed
@@ -246,6 +277,15 @@ public class AjoutExemplaire extends javax.swing.JDialog {
         });
     }
 
+    public Oeuvre getOeuvre() {
+        return oeuvre;
+    }
+
+    public void setOeuvre(Oeuvre oeuvre) {
+        this.oeuvre = oeuvre;
+    }
+
+    private Oeuvre oeuvre = new Oeuvre();
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ajouterBouton;
     private javax.swing.JButton annulerBouton;

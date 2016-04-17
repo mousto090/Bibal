@@ -14,8 +14,6 @@ import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import objets_metiers.Livre;
 import objets_metiers.Magazine;
@@ -399,8 +397,8 @@ public class GestionOeuvresExemplaires extends javax.swing.JFrame implements Mou
 
     private void afficherButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afficherButtonActionPerformed
         try {
-            ArrayList<Oeuvre> listoeOeuvres = OeuvreControl.getListOeuvres();
-            fillOeuvreJtable(listoeOeuvres);
+            ArrayList<Oeuvre> listOeuvres = OeuvreControl.getListOeuvres();
+            fillOeuvreJtable(listOeuvres);
         } catch (BibalExceptions ex) {
             System.out.println("IHM.GestionOeuvre.afficherButtonActionPerformed()");
         }
@@ -433,20 +431,33 @@ public class GestionOeuvresExemplaires extends javax.swing.JFrame implements Mou
                     } else {
                         OeuvreControl.supprimer(new Livre(id, titre, auteur, categorie));
                     }
-                    ((ModelTableau)tableListeOeuvre.getModel()).removeRow(tableListeOeuvre.getSelectedRow());
+                    ((ModelTableau) tableListeOeuvre.getModel()).removeRow(tableListeOeuvre.getSelectedRow());
                     JOptionPane.showMessageDialog(null, "L'Oeuvre a bien été supprimée",
                             "Informations", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
 
         } catch (BibalExceptions ex) {
-            Logger.getLogger(GestionOeuvresExemplaires.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("IHM.GestionOeuvresExemplaires.supprimerButtonActionPerformed()");
         }
     }//GEN-LAST:event_supprimerButtonActionPerformed
 
     private void exemplaireButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exemplaireButtonActionPerformed
-    
-        Exemplaires exemplaires = new Exemplaires(this, true);
+        Exemplaires exemplaires;
+        int id = Integer.parseInt(dataLigneSelected[0].toString());
+        String titre = dataLigneSelected[1].toString();
+        String auteur = dataLigneSelected[2].toString();
+        String categorie = dataLigneSelected[3].toString();
+        String typeOeuvre = dataLigneSelected[4].toString();
+        int nbExemplaire = Integer.parseInt(dataLigneSelected[5].toString());
+        Oeuvre oeuvre;
+        if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
+            oeuvre = new Magazine(id, titre, auteur, categorie);
+        } else {
+            oeuvre = new Livre(id, titre, auteur, categorie);
+        }
+        oeuvre.getExamplairesOeuvre().setSize(nbExemplaire);
+        exemplaires = new Exemplaires(this, true, oeuvre, typeOeuvre);
         exemplaires.setLocationRelativeTo(null);
         exemplaires.setVisible(true);
     }//GEN-LAST:event_exemplaireButtonActionPerformed
@@ -509,23 +520,6 @@ public class GestionOeuvresExemplaires extends javax.swing.JFrame implements Mou
             supprimerButton.setEnabled(false);
             exemplaireButton.setEnabled(true);
         }
-//            identifiantField.setText(dataLigneSelected[0].toString());
-//            nomField.setText(dataLigneSelected[1].toString());
-//            prenomField.setText(dataLigneSelected[2].toString());
-//            try {
-//                dateNaisPicker.setDate(formatDate(YMDtoDMY(dataLigneSelected[3].toString(), "/")));
-//            } catch (BibalExceptions ex) {
-//                ex.printStackTrace();
-//            }
-//            String sexe = dataLigneSelected[4].toString();
-//            String civilite = sexe.equalsIgnoreCase("Masculin") ? "M" : "Mme";
-//            civiliteCombo.setSelectedItem(civilite);
-//            telField.setText(dataLigneSelected[5].toString());
-//            adresseField.setText(dataLigneSelected[6].toString());
-//            modifierBouton.setEnabled(true);
-//            supprimerButton.setEnabled(true);
-//            ajouterBouton.setEnabled(false);
-//        }
     }
 
     @Override

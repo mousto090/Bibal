@@ -1,19 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package IHM;
 
 import Utility.BibalExceptions;
 import Utility.ModelTableau;
+import static Utility.Utility.showMessageSucces;
 import control.ExemplaireControl;
-import javax.swing.JOptionPane;
 import objets_metiers.Exemplaire;
-
+import static java.lang.Integer.parseInt;
 /**
- *
- * @author Jalloh
+ * 
+ * @author Diallo & Janati
  */
 public class ModificationExemplaire extends javax.swing.JDialog {
 
@@ -48,6 +43,7 @@ public class ModificationExemplaire extends javax.swing.JDialog {
         annulerBouton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Modification Exemplaire");
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setName("Gestion personnel"); // NOI18N
@@ -83,7 +79,7 @@ public class ModificationExemplaire extends javax.swing.JDialog {
         modifierBouton.setText("Modifier");
         modifierBouton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                modifierBoutonActionPerformed(evt);
+                modifier(evt);
             }
         });
 
@@ -176,67 +172,31 @@ public class ModificationExemplaire extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void modifierBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifierBoutonActionPerformed
+    private void modifier(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifier
 
         try {
-            int identifiant = Integer.parseInt(identifiantField.getText());
-            String etatExemplaire = etatExemplaireCombo.getSelectedItem().toString();
-            ExemplaireControl.modifier(new Exemplaire(identifiant, etatExemplaire));
-            ((ModelTableau) Exemplaires.tableExemplaires.getModel()).
-                    updateRow(
-                            new Object[]{identifiant, etatExemplaire},
-                            Exemplaires.tableExemplaires.getSelectedRow());
-            JOptionPane.showMessageDialog(null, "Modifications enregistrées avec succès", "Informations", JOptionPane.INFORMATION_MESSAGE);
-        } catch (BibalExceptions ex) {
-            ex.printStackTrace();
+            Exemplaire exemplaire = getExempalireInfos();
+            if (null != exemplaire) {
+            ExemplaireControl.modifier(exemplaire);
+            ((ModelTableau) GestionExemplaires.tableExemplaires.getModel()).
+                    updateRow(new Object[]{exemplaire.getId(), exemplaire.getEtat()},
+                            GestionExemplaires.tableExemplaires.getSelectedRow());
+                showMessageSucces("Modifications enregistrées avec succès");
+            }
+        } catch (BibalExceptions e) {
+            System.out.println("IHM.ModificationExemplaire.modifierBoutonActionPerformed()");
         }
-    }//GEN-LAST:event_modifierBoutonActionPerformed
+    }//GEN-LAST:event_modifier
 
     private void annulerBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerBoutonActionPerformed
         this.dispose();
     }//GEN-LAST:event_annulerBoutonActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ModificationExemplaire.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ModificationExemplaire.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ModificationExemplaire.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ModificationExemplaire.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
+    private Exemplaire getExempalireInfos() {
+        int id = parseInt(identifiantField.getText());
+        String etatExemplaire = etatExemplaireCombo.getSelectedItem().toString();
 
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                ModificationExemplaire dialog = new ModificationExemplaire(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
+        return new Exemplaire(id, etatExemplaire);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

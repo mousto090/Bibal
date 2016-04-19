@@ -2,6 +2,10 @@ package objets_metiers;
 
 import Utility.BibalExceptions;
 
+/**
+ * 
+ * @author Diallo & Janati
+ */
 public class Magazine extends Oeuvre {
 
     private int lending;

@@ -4,7 +4,10 @@ import Utility.BibalExceptions;
 import java.util.ArrayList;
 import objets_metiers.Exemplaire;
 import objets_metiers.Oeuvre;
-
+/**
+ * 
+ * @author Diallo & Janati
+ */
 public class ExemplaireControl {
 
     public static void ajouter(Oeuvre oeuvre, String etatExemplaire) throws BibalExceptions {

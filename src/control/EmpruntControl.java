@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import objets_metiers.Emprunt;
 import objets_metiers.Exemplaire;
 import objets_metiers.Oeuvre;
-import objets_metiers.Reservation;
 import objets_metiers.Usager;
-
+/**
+ * 
+ * @author Diallo & Janati
+ */
 public class EmpruntControl {
 
     public static void emprunter(int id, String titre) throws BibalExceptions {

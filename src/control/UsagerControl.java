@@ -3,7 +3,10 @@ package control;
 import Utility.BibalExceptions;
 import java.util.ArrayList;
 import objets_metiers.Usager;
-
+/**
+ * 
+ * @author Diallo & Janati
+ */
 public class UsagerControl {
 
     public static void ajouter(Usager usager) throws BibalExceptions {

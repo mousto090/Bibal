@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package IHM;
 
 import Utility.BibalExceptions;
@@ -14,23 +9,19 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import static java.lang.Integer.parseInt;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
-import static javax.swing.JOptionPane.showConfirmDialog;
 import objets_metiers.Livre;
 import objets_metiers.Magazine;
 import objets_metiers.Oeuvre;
-
+import static java.lang.Integer.parseInt;
+import static javax.swing.JOptionPane.showConfirmDialog;
 /**
- *
- * @author SIMO
+ * 
+ * @author Diallo & Janati
  */
 public class GestionOeuvresExemplaires extends javax.swing.JFrame implements MouseListener {
 
-    /**
-     * Creates new form GestionUsager
-     */
     public GestionOeuvresExemplaires() {
 
         initComponents();
@@ -434,7 +425,7 @@ public class GestionOeuvresExemplaires extends javax.swing.JFrame implements Mou
     private void exemplaireButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exemplaireButtonActionPerformed
         Oeuvre oeuvre = getOeuvreInfos();
         if (null != oeuvre) {
-            Exemplaires exemplaires = new Exemplaires(this, true, getOeuvreInfos());
+            GestionExemplaires exemplaires = new GestionExemplaires(this, true, getOeuvreInfos());
             exemplaires.setLocationRelativeTo(null);
             exemplaires.setVisible(true);
         }
@@ -528,56 +519,6 @@ public class GestionOeuvresExemplaires extends javax.swing.JFrame implements Mou
 
     @Override
     public void mouseExited(MouseEvent e) {
-    }
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Metal".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(GestionOeuvresExemplaires.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(GestionOeuvresExemplaires.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(GestionOeuvresExemplaires.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(GestionOeuvresExemplaires.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new GestionOeuvresExemplaires().setVisible(true);
-            }
-        });
     }
 
     private Object dataLigneSelected[];

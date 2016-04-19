@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Utility;
 
 import java.io.IOException;
@@ -13,11 +8,13 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- *
+ *@author Diallo & Janati
+ * 
  * Cette classe se charge de lire les informations de configuration depuis le
- * fichier 'DatabaseConfig.properties', fournir une connexion à la base de
- * données et instancier les différents DAO de l'application
+ * fichier 'DatabaseConfig.properties' et fournir une connexion à la base de
+ * données 
  */
+
 public class DBConnection {
 
     private static final String FICHIER_PROPERTIES = "Utility/DatabaseConfig.properties";

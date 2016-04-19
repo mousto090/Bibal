@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package IHM;
 
 import Utility.BibalExceptions;
@@ -28,16 +23,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import objets_metiers.Usager;
-
 /**
- *
- * @author SIMO
+ * 
+ * @author Diallo & Janati
  */
 public class GestionUsager extends javax.swing.JFrame implements MouseListener {
 
-    /**
-     * Creates new form GestionUsager
-     */
     public GestionUsager() {
 
         initComponents();
@@ -95,6 +86,7 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
         retourButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Gestion Usagers");
         setPreferredSize(new java.awt.Dimension(1162, 608));
         setResizable(false);
 
@@ -340,7 +332,7 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
         modifierBouton.setEnabled(false);
         modifierBouton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                modifierBoutonActionPerformed(evt);
+                modifier(evt);
             }
         });
 
@@ -349,7 +341,7 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
         supprimerButton.setEnabled(false);
         supprimerButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                supprimerButtonActionPerformed(evt);
+                supprimer(evt);
             }
         });
 
@@ -457,8 +449,8 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
         m.setVisible(true);
     }//GEN-LAST:event_retourButtonActionPerformed
 
-    private void modifierBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifierBoutonActionPerformed
-        
+    private void modifier(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifier
+
         try {
             Usager usager = getUsagerInfos();
             UsagerControl.modifier(usager);
@@ -476,9 +468,9 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
         } catch (BibalExceptions e) {
             System.out.println("IHM.GestionUsager.modifierBoutonActionPerformed()");
         }
-    }//GEN-LAST:event_modifierBoutonActionPerformed
+    }//GEN-LAST:event_modifier
 
-    private void supprimerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_supprimerButtonActionPerformed
+    private void supprimer(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_supprimer
         try {
             Usager usager = getUsagerInfos();
             UsagerControl.supprimer(usager);
@@ -490,9 +482,9 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
             supprimerButton.setEnabled(false);
             ajouterBouton.setEnabled(true);
         } catch (BibalExceptions e) {
-            System.out.println("IHM.GestionUsager.supprimerButtonActionPerformed()");
+            showMessageSucces("Impossible de supprimer cet usager");
         }
-    }//GEN-LAST:event_supprimerButtonActionPerformed
+    }//GEN-LAST:event_supprimer
 
     private void RecherchBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RecherchBoutonActionPerformed
         String rechPar = RecherchCombo.getSelectedItem().toString();
@@ -504,7 +496,11 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
                     case "Identifiant":
                         int identifiant = parseInt(textARechercher);
                         Usager usager = UsagerControl.findById(identifiant);
-                        fillUsagerJtable(new ArrayList<Usager>(){{add(usager);}});
+                        fillUsagerJtable(new ArrayList<Usager>() {
+                            {
+                                add(usager);
+                            }
+                        });
                         break;
                     case "Nom":
                         listUsagers = UsagerControl.findByNom(textARechercher);
@@ -564,7 +560,7 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
         String sexe = civiliteCombo.getSelectedItem().toString().equals("M") ? "Masculin" : "Féminin";
         String adresse = adresseField.getText();
         String tel = telField.getText().replace("-", "").trim();
-        return new Usager(identifiant,nom, prenom, dateNais, sexe, adresse, tel);
+        return new Usager(identifiant, nom, prenom, dateNais, sexe, adresse, tel);
     }
 
     private void fillUsagerJtable(ArrayList<Usager> listUsagers) {
@@ -668,43 +664,6 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
     public void mouseExited(MouseEvent e) {
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Metal".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(GestionUsager.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(GestionUsager.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(GestionUsager.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(GestionUsager.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new GestionUsager().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton RecherchBouton;

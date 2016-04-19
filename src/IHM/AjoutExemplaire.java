@@ -1,36 +1,35 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package IHM;
 
+import static IHM.GestionExemplaires.getNbExemplaireLabelValue;
+import static IHM.GestionExemplaires.setNbExemplaireLabelValue;
 import Utility.BibalExceptions;
 import Utility.DBConnection;
 import Utility.ModelTableau;
 import static Utility.Utility.closeStatementResultSet;
 import static Utility.Utility.initialiseRequetePreparee;
+import static Utility.Utility.showMessageSucces;
 import control.ExemplaireControl;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
+import objets_metiers.Exemplaire;
 import objets_metiers.Oeuvre;
+import static java.lang.Integer.parseInt;
+import static javax.swing.JOptionPane.showMessageDialog;
 
 /**
  *
- * @author Jalloh
+ * @author Diallo & Janati
  */
 public class AjoutExemplaire extends javax.swing.JDialog {
 
-    /**
-     * Creates new form AjoutExemplaire
-     */
     public AjoutExemplaire(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         setIdentifiant();
     }
+
     public AjoutExemplaire(java.awt.Frame parent, boolean modal, Oeuvre oeuvre) {
         this(parent, modal);
         this.oeuvre = oeuvre;
@@ -87,17 +86,12 @@ public class AjoutExemplaire extends javax.swing.JDialog {
         etatExemplaireCombo.setFont(new java.awt.Font("Times New Roman", 1, 12)); // NOI18N
         etatExemplaireCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Neuf", "Bon", "Vieux" }));
         etatExemplaireCombo.setPreferredSize(new java.awt.Dimension(123, 26));
-        etatExemplaireCombo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                etatExemplaireComboActionPerformed(evt);
-            }
-        });
 
         ajouterBouton.setFont(new java.awt.Font("Times New Roman", 1, 16)); // NOI18N
         ajouterBouton.setText("Ajouter");
         ajouterBouton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ajouterBoutonActionPerformed(evt);
+                ajouter(evt);
             }
         });
 
@@ -190,27 +184,37 @@ public class AjoutExemplaire extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void etatExemplaireComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_etatExemplaireComboActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_etatExemplaireComboActionPerformed
-
-    private void ajouterBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ajouterBoutonActionPerformed
+    private void ajouter(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ajouter
 
         try {
-            String exemplaireId  = identifiantField.getText();
-            String etatExemplaire = etatExemplaireCombo.getSelectedItem().toString();
-            ExemplaireControl.ajouter(this.oeuvre, etatExemplaire);
-            ((ModelTableau) Exemplaires.tableExemplaires.getModel())
-                    .addRow(
-                            new Object[]{exemplaireId, etatExemplaire});
-            Exemplaires.setNbExemplaireLabelValue(
-                    (Integer.parseInt(Exemplaires.getNbExemplaireLabelValue())+1)+"");
-            JOptionPane.showMessageDialog(null, "Exemplaire ajouté avec succès", "Informations", JOptionPane.INFORMATION_MESSAGE);
-            setIdentifiant();
-        } catch (BibalExceptions ex) {
-            ex.printStackTrace();
+            Exemplaire exemplaire = getExempalireInfos();
+            if (null != exemplaire) {
+                ExemplaireControl.ajouter(oeuvre, exemplaire.getEtat());
+                ((ModelTableau) GestionExemplaires.tableExemplaires.getModel())
+                        .addRow(new Object[]{exemplaire.getId(), exemplaire.getEtat()});
+                setNbExemplaireLabelValue((parseInt(getNbExemplaireLabelValue()) + 1) + "");
+                showMessageSucces("Exemplaire ajouté avec succès");
+                setIdentifiant();
+            }
+        } catch (BibalExceptions e) {
+            System.out.println("IHM.AjoutExemplaire.ajouterBoutonActionPerformed()");
         }
-    }//GEN-LAST:event_ajouterBoutonActionPerformed
+    }//GEN-LAST:event_ajouter
+
+    private void annulerBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerBoutonActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_annulerBoutonActionPerformed
+
+    public Oeuvre getOeuvre() {
+        return oeuvre;
+    }
+
+    private Exemplaire getExempalireInfos() {
+        int id = parseInt(identifiantField.getText());
+        String etatExemplaire = etatExemplaireCombo.getSelectedItem().toString();
+
+        return new Exemplaire(id, etatExemplaire);
+    }
 
     private void setIdentifiant() {
         PreparedStatement preparedStatement = null;
@@ -226,60 +230,11 @@ public class AjoutExemplaire extends javax.swing.JDialog {
             }
             identifiantField.setText((identifiant + 1) + "");
         } catch (SQLException | BibalExceptions e) {
-            JOptionPane.showMessageDialog(null, "Erreurs d'accès à la base de données",
+            showMessageDialog(null, "Erreurs d'accès à la base de données",
                     "Erreurs", JOptionPane.ERROR_MESSAGE);
         } finally {
             closeStatementResultSet(preparedStatement, resultSet);
         }
-    }
-    private void annulerBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerBoutonActionPerformed
-        this.dispose();
-    }//GEN-LAST:event_annulerBoutonActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AjoutExemplaire.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AjoutExemplaire.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AjoutExemplaire.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AjoutExemplaire.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                AjoutExemplaire dialog = new AjoutExemplaire(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
-
-    public Oeuvre getOeuvre() {
-        return oeuvre;
     }
 
     public void setOeuvre(Oeuvre oeuvre) {

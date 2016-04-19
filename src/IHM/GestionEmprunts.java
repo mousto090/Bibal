@@ -1,14 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package IHM;
 
 import Utility.BibalExceptions;
 import Utility.DBConnection;
 import static Utility.Utility.closeStatementResultSet;
 import static Utility.Utility.initialiseRequetePreparee;
+import static Utility.Utility.showMessageSucces;
 import control.EmpruntControl;
 import control.UsagerControl;
 import java.sql.PreparedStatement;
@@ -16,20 +12,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import objets_metiers.Usager;
-
+import static java.lang.Integer.parseInt;
 /**
- *
- * @author Jalloh
+ * 
+ * @author Diallo & Janati
  */
-public class Emprunter extends javax.swing.JDialog {
+public class GestionEmprunts extends javax.swing.JDialog {
 
-    public Emprunter(java.awt.Frame parent, boolean modal) {
+    public GestionEmprunts(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         setIdentifiant();
     }
 
-    public Emprunter(java.awt.Frame parent, boolean modal, String titre) {
+    public GestionEmprunts(java.awt.Frame parent, boolean modal, String titre) {
         this(parent, modal);
         this.titre = titre;
     }
@@ -54,6 +50,7 @@ public class Emprunter extends javax.swing.JDialog {
         nomUsagerLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Emprunter");
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setName("Gestion personnel"); // NOI18N
@@ -87,7 +84,7 @@ public class Emprunter extends javax.swing.JDialog {
         validerBouton.setText("Valider");
         validerBouton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                validerBoutonActionPerformed(evt);
+                emprunter(evt);
             }
         });
 
@@ -185,37 +182,45 @@ public class Emprunter extends javax.swing.JDialog {
 
     private void identifiantUsagerComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_identifiantUsagerComboActionPerformed
         try {
-            String id = identifiantUsagerCombo.getSelectedItem().toString();
-            if (!id.equals("Choisir identifiant")) {
-                int identifiant = Integer.parseInt(id);
-                Usager usager = UsagerControl.findById(identifiant);
+            int usagerId = getUsagerID();
+            if (usagerId != -1) {
+                Usager usager = UsagerControl.findById(usagerId);
                 if (null != usager) {
                     String nom = usager.getNom() + " " + usager.getPrenom();
                     nomUsagerLabel.setText(nom);
                 }
             }
-        } catch (BibalExceptions ex) {
+        } catch (BibalExceptions e) {
             System.out.println("IHM.Emprunter.identifiantUsagerComboActionPerformed()");
         }
     }//GEN-LAST:event_identifiantUsagerComboActionPerformed
 
-    private void validerBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_validerBoutonActionPerformed
+    private void emprunter(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emprunter
 
         try {
-            String id = identifiantUsagerCombo.getSelectedItem().toString();
-            if (!id.equals("Choisir identifiant")) {
-                int usagerId = Integer.parseInt(id);
+            int usagerId = getUsagerID();
+            if (usagerId != -1) {
                 EmpruntControl.emprunter(usagerId, titre);
-                JOptionPane.showMessageDialog(null, "Emprunt enregistré",
-                        "Informations", JOptionPane.INFORMATION_MESSAGE);
-            }else{
-                JOptionPane.showMessageDialog(null, "Veuillez choisir un identifiant",
-                        "Informations", JOptionPane.INFORMATION_MESSAGE);
+                showMessageSucces("Emprunt enregistré");
+            } else {
+                showMessageSucces("Veuillez choisir un identifiant");
             }
-        } catch (BibalExceptions ex) {
+        } catch (BibalExceptions e) {
             System.out.println("IHM.Emprunter.validerBoutonActionPerformed()");
         }
-    }//GEN-LAST:event_validerBoutonActionPerformed
+    }//GEN-LAST:event_emprunter
+
+    private void annulerBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerBoutonActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_annulerBoutonActionPerformed
+
+    private int getUsagerID() {
+        String id = identifiantUsagerCombo.getSelectedItem().toString();
+        if (!id.equals("Choisir identifiant")) {
+            return parseInt(id);
+        }
+        return -1;
+    }
 
     private void setIdentifiant() {
         PreparedStatement preparedStatement = null;
@@ -236,54 +241,6 @@ public class Emprunter extends javax.swing.JDialog {
         } finally {
             closeStatementResultSet(preparedStatement, resultSet);
         }
-    }
-    private void annulerBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerBoutonActionPerformed
-        this.dispose();
-    }//GEN-LAST:event_annulerBoutonActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Emprunter.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Emprunter.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Emprunter.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Emprunter.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                Emprunter dialog = new Emprunter(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
     }
 
     private String titre;

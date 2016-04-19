@@ -1,15 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Utility;
 
 import javax.swing.JOptionPane;
 
 /**
  *
- * @author Jalloh
+ * @author Diallo & Janati
  */
 public class BibalExceptions extends Exception{
 

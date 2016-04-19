@@ -2,7 +2,6 @@ package objets_metiers;
 
 import Utility.BibalExceptions;
 import Utility.DBConnection;
-import Utility.Utility;
 import static Utility.Utility.YMDtoDMY;
 import static Utility.Utility.closeStatement;
 import static Utility.Utility.closeStatementResultSet;
@@ -15,6 +14,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * 
+ * @author Diallo & Janati
+ */
 public class Reservation {
 
     private int id;
@@ -22,11 +25,11 @@ public class Reservation {
     private Date dateAnnulation;
     private Usager usagerReservation;
     private Oeuvre oeuvresReservation;
-    static final String SQL_SELECT_JOINTURE= "SELECT reservation.*, o.titre, u.nom,"
-                + " u.prenom FROM reservation, oeuvre o, usager u"
-                + " WHERE OeuvreID = o.id"
-                + " AND UsagerID = u.id"
-                + " AND ";
+//    static final String SQL_SELECT_JOINTURE= "SELECT reservation.*, o.titre, u.nom,"
+//                + " u.prenom FROM reservation, oeuvre o, usager u"
+//                + " WHERE OeuvreID = o.id"
+//                + " AND UsagerID = u.id"
+//                + " AND ";
     public Reservation() {
         this.dateReservation = Date.from(Instant.now());
         this.dateAnnulation = null;
@@ -39,14 +42,6 @@ public class Reservation {
         this.oeuvresReservation = oeuvre;
         this.dateReservation = dateJour;
         this.dateAnnulation = null;
-    }
-
-    public Reservation find() {
-        throw new UnsupportedOperationException();
-    }
-
-    public void destroy() {
-        throw new UnsupportedOperationException();
     }
 
     public int getId() {
@@ -93,15 +88,9 @@ public class Reservation {
     }
 
     public void reserver(Usager usager, Oeuvre oeuvre, Date dateJour) throws BibalExceptions {
-
-        //si un exemplaire de l'oeuvre est disponible, reservation impossible
-//        if(oeuvre.estReservable()== false){
-//            throw new BibalExceptions("Vous pouvez pas réserver cette oeuvre\n"
-//                    + "Des exemplaires sont disponibles");
-//        }
         Reservation reservation = findByReservation(usager, oeuvre);
         if (null != reservation) {
-            throw new BibalExceptions("Vous avez déjà réserver l'oeuvre '" + oeuvre.getTitre()
+            throw new BibalExceptions("Vous avez déjà réservé l'oeuvre '" + oeuvre.getTitre()
                     + "'\n le '" + YMDtoDMY(reservation.getDateReservation().toString(),"-") + "'");
         }
         final String SQL_INSERT = "INSERT INTO Reservation "
@@ -139,8 +128,6 @@ public class Reservation {
             if (statut == 0) {
                 throw new BibalExceptions("Echec de l'annulation de la réservation");
             }
-            
-
         } catch (SQLException | BibalExceptions e) {
             throw new BibalExceptions("Erreurs lors de  l'annulation de la réservation", e.getCause());
         } finally {
@@ -149,15 +136,21 @@ public class Reservation {
     }
 
     public Reservation findById(int id) throws BibalExceptions {
-        final String SQL_SELECT_BY_ID = SQL_SELECT_JOINTURE
-                + " reservation.id = ?";
+        final String SQL_SELECT_BY_ID = "SELECT reservation.*, o.titre, u.nom,"
+                + " u.prenom FROM reservation, oeuvre o, usager u"
+                + " WHERE OeuvreID = o.id"
+                + " AND UsagerID = u.id"
+                + " AND reservation.id = ?";
         ArrayList<Reservation> reservations = find(SQL_SELECT_BY_ID, id);
         return reservations.isEmpty() ? null : reservations.get(0);
     }
 
     public ArrayList<Reservation> findByDateReservaton(Date dateRes) throws BibalExceptions {
-        final String SQL_SELECT_BY_DATE_RES = SQL_SELECT_JOINTURE 
-                + " dateReservation = ?"
+        final String SQL_SELECT_BY_DATE_RES = "SELECT reservation.*, o.titre, u.nom,"
+                + " u.prenom FROM reservation, oeuvre o, usager u"
+                + " WHERE OeuvreID = o.id"
+                + " AND UsagerID = u.id"
+                + " AND dateReservation = ?"
                 + " AND dateAnnulation IS NULL";
         String formatedDateRes = dateToStr(dateRes);
         ArrayList<Reservation> reservations = find(SQL_SELECT_BY_DATE_RES, formatedDateRes);
@@ -166,8 +159,11 @@ public class Reservation {
 
     
     public Reservation findByReservation(Usager usager, Oeuvre oeuvre) throws BibalExceptions {
-        final String SQL_SELECT_BY_ID_OEUVRE_USAGER = SQL_SELECT_JOINTURE 
-                + " UsagerID = ?"
+        final String SQL_SELECT_BY_ID_OEUVRE_USAGER = "SELECT reservation.*, o.titre, u.nom,"
+                + " u.prenom FROM reservation, oeuvre o, usager u"
+                + " WHERE OeuvreID = o.id"
+                + " AND UsagerID = u.id"
+                + " AND UsagerID = ?"
                 + " AND OeuvreID = ? "
                 + " AND DateAnnulation IS NULL";
         ArrayList<Reservation> reservations
@@ -176,8 +172,11 @@ public class Reservation {
     }
 
     public ArrayList<Reservation> findByReservation(Oeuvre oeuvre) throws BibalExceptions {
-        final String SQL_SELECT_BY_ID_OEUVRE = SQL_SELECT_JOINTURE 
-                + " OeuvreID = ? "
+        final String SQL_SELECT_BY_ID_OEUVRE = "SELECT reservation.*, o.titre, u.nom,"
+                + " u.prenom FROM reservation, oeuvre o, usager u"
+                + " WHERE OeuvreID = o.id"
+                + " AND UsagerID = u.id"
+                + " AND OeuvreID = ? "
                 + " AND DateAnnulation IS NULL";
         ArrayList<Reservation> reservations
                 = find(SQL_SELECT_BY_ID_OEUVRE, oeuvre.getId());

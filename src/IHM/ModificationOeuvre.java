@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package IHM;
 
 import Utility.BibalExceptions;
@@ -12,16 +7,12 @@ import control.OeuvreControl;
 import objets_metiers.Livre;
 import objets_metiers.Magazine;
 import objets_metiers.Oeuvre;
-
 /**
- *
- * @author Jalloh
+ * 
+ * @author Diallo & Janati
  */
 public class ModificationOeuvre extends javax.swing.JDialog {
 
-    /**
-     * Creates new form AjoutOe
-     */
     public ModificationOeuvre(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -64,6 +55,7 @@ public class ModificationOeuvre extends javax.swing.JDialog {
         titleLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Modification Oeuvre");
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setName("Gestion personnel"); // NOI18N
@@ -116,7 +108,7 @@ public class ModificationOeuvre extends javax.swing.JDialog {
         modifierBouton.setText("Modifier");
         modifierBouton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                modifierBoutonActionPerformed(evt);
+                modifier(evt);
             }
         });
 
@@ -244,7 +236,7 @@ public class ModificationOeuvre extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void modifierBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifierBoutonActionPerformed
+    private void modifier(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifier
 
         try {
             Oeuvre oeuvre = getOeuvreInfos();
@@ -258,7 +250,7 @@ public class ModificationOeuvre extends javax.swing.JDialog {
         } catch (BibalExceptions e) {
             System.out.println("IHM.ModificationOeuvre.modifierBoutonActionPerformed()");
         }
-    }//GEN-LAST:event_modifierBoutonActionPerformed
+    }//GEN-LAST:event_modifier
 
     private void annulerBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerBoutonActionPerformed
         this.dispose();
@@ -277,50 +269,6 @@ public class ModificationOeuvre extends javax.swing.JDialog {
         return new Livre(identifiant, titre, auteur, categorie);
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ModificationOeuvre.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ModificationOeuvre.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ModificationOeuvre.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ModificationOeuvre.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                ModificationOeuvre dialog = new ModificationOeuvre(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton annulerBouton;
     private javax.swing.JFormattedTextField auteurField;

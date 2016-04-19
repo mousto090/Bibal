@@ -3,7 +3,10 @@ package control;
 import Utility.BibalExceptions;
 import java.util.ArrayList;
 import objets_metiers.Oeuvre;
-
+/**
+ * 
+ * @author Diallo & Janati
+ */
 public class OeuvreControl {
 
     public static void ajouter(Oeuvre oeuvre) throws BibalExceptions {

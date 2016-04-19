@@ -8,7 +8,10 @@ import java.util.Date;
 import objets_metiers.Oeuvre;
 import objets_metiers.Reservation;
 import objets_metiers.Usager;
-
+/**
+ * 
+ * @author Diallo & Janati
+ */
 public class ReservationControl {
 
     public static void reserver(int idUsager, String titre) throws BibalExceptions {
@@ -20,7 +23,6 @@ public class ReservationControl {
         Oeuvre oeuvre =new Oeuvre();
         oeuvre = oeuvre.findByTitre(titre).get(0);
         if (null == oeuvre) {
-            //on doit enregistre la reservation meme si l'oeuvre n'existe pas
             throw new BibalExceptions("L'oeuvre n'existe pas");
         }
         String datJour = formatMillisToDate(System.currentTimeMillis());

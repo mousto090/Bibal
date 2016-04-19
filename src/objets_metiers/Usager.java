@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Vector;
 
+/**
+ *
+ * @author Diallo & Janati
+ */
 public class Usager {
 
     private int id;

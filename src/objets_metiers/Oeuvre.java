@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.Vector;
 import java.util.stream.Stream;
 
+/**
+ * 
+ * @author Diallo & Janati
+ */
 public class Oeuvre {
 
     protected int id;

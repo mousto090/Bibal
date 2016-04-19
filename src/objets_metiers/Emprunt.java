@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * 
+ * @author Diallo & Janati
+ */
 public class Emprunt {
 
     private int id;
@@ -109,11 +113,6 @@ public class Emprunt {
                     + "Date d'emprunt : " + YMDtoDMY(emprunt.getDateEmprunt().toString(), "-") + "\n"
                     + "Date de retour Prévu : " + YMDtoDMY(emprunt.getDateRetourPrevu().toString(), "-"));
         }
-
-//        if(oeuvre.estReservable()== true){
-//            //il n'y a aucun exempalaire il faudra réserver l'oeuvre
-//            return false;
-//        }
         final String SQL_INSERT = "INSERT INTO emprunt "
                 + "(ExemplaireId, UsagerID, DateEmprunt, DateRetourPrevu, DateRetourEffective) "
                 + "VALUES (?, ?, ?, ?, ?)";
@@ -154,10 +153,7 @@ public class Emprunt {
         try {
             preparedStatement = initialiseRequetePreparee(DBConnection.getConnection(), SQL_DELETE_BY_ID,
                     exemplaire.getId());
-            int statut = preparedStatement.executeUpdate();
-//            if (statut == 0) {
-//                throw new BibalExceptions("Echec de la suppression des emprunts de l'exemplaire");
-//            }
+            preparedStatement.executeUpdate();
         } catch (SQLException | BibalExceptions e) {
             throw new BibalExceptions("Erreurs lors de la suppression des emprunts de l'exemplaire ", e.getCause());
         } finally {
@@ -229,18 +225,6 @@ public class Emprunt {
             closeStatement(preparedStatement);
         }
     }
-//    public Emprunt findByEmprunt(Usager usager, Exemplaire exemplaire) throws BibalExceptions {
-//        final String SQL_SELECT_BY_ID_OEUVRE_USAGER = "SELECT emp.*, u.Nom, u.Prenom"
-//                + " FROM emprunt emp, exemplaire e, usager u"
-//                + " WHERE emp.ExemplaireId = e.id"
-//                + " AND emp.UsagerID = u.id"
-//                + " AND DateRetourEffective IS NULL"
-//                + " AND emp.UsagerID = ?"
-//                + " AND emp.ExemplaireId = ?";
-//        ArrayList<Emprunt> emprunts
-//                = find(SQL_SELECT_BY_ID_OEUVRE_USAGER, usager.getId(), exemplaire.getId());
-//        return emprunts.isEmpty() ? null : emprunts.get(0);
-//    }
 
     private ArrayList<Emprunt> find(String sql, Object... objets) throws BibalExceptions {
         PreparedStatement preparedStatement = null;

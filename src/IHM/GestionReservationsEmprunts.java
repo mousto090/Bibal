@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package IHM;
 
 import Utility.BibalExceptions;
@@ -10,6 +5,7 @@ import Utility.DBConnection;
 import Utility.ModelTableau;
 import static Utility.Utility.closeStatementResultSet;
 import static Utility.Utility.initialiseRequetePreparee;
+import static Utility.Utility.showMessageSucces;
 import control.EmpruntControl;
 import control.ExemplaireControl;
 import control.OeuvreControl;
@@ -29,10 +25,11 @@ import objets_metiers.Livre;
 import objets_metiers.Magazine;
 import objets_metiers.Oeuvre;
 import objets_metiers.Reservation;
-
+import static java.lang.Integer.parseInt;
+import static javax.swing.JOptionPane.showMessageDialog;
 /**
- *
- * @author Jalloh
+ * 
+ * @author Diallo & Janati
  */
 public class GestionReservationsEmprunts extends javax.swing.JFrame {
 
@@ -269,7 +266,7 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
         rendreButton.setPreferredSize(new java.awt.Dimension(95, 31));
         rendreButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rendreButtonActionPerformed(evt);
+                rendre(evt);
             }
         });
 
@@ -279,7 +276,7 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
         emprunterButton.setPreferredSize(new java.awt.Dimension(95, 31));
         emprunterButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                emprunterButtonActionPerformed(evt);
+                emprunter(evt);
             }
         });
 
@@ -776,9 +773,7 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
                 if (null != listEmprunts) {
                     fillEmpruntsJtable(listEmprunts);
                 } else {
-                    JOptionPane.showMessageDialog(null,
-                            "Aucun emprunt en cours de cette oeuvre trouvé", "Informations",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    showMessageSucces("Aucun emprunt en cours de cette oeuvre trouvé");
                     String titre[] = new String[]{"ID", "Exemplaire", "Usager",
                         "Date Emprunt", "Date Retour"};
                     Object data[][] = new Object[1][titre.length];
@@ -798,7 +793,7 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
         String identitfiant = identifiantComboBox.getSelectedItem().toString();
         if (!identitfiant.equals("Choix ID")) {
             try {
-                int id = Integer.parseInt(identitfiant);
+                int id = parseInt(identitfiant);
                 Oeuvre oeuvre = OeuvreControl.findById(id);
                 titreLabelValue.setText(oeuvre.getTitre());
                 categorieLabelValue.setText(oeuvre.getCategorie());
@@ -859,44 +854,36 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
                     ModelTableau model = new ModelTableau(data, titre);
                     tableExemplaires.setModel(model);
                     tableExemplaires.setRowHeight(1);
-                    JOptionPane.showMessageDialog(null,
-                            "Aucun exemplaire disponible trouvé", "Informations",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    showMessageSucces("Aucun exemplaire disponible trouvé");
                 }
             }
-
-        } catch (BibalExceptions ex) {
+        } catch (BibalExceptions e) {
             System.out.println("IHM.GestionOeuvre.afficherButtonActionPerformed()");
         }
     }//GEN-LAST:event_affExempButtonActionPerformed
 
-    private void rendreButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rendreButtonActionPerformed
+    private void rendre(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rendre
         try {
-            String identitfiant = identifiantComboBox.getSelectedItem().toString();
-            if (!identitfiant.equals("Choix ID")) {
-                int idExemplaire = Integer.parseInt(dataLigneSelectedEmprunts[1].toString());
-                String nom = dataLigneSelectedEmprunts[2].toString();
-                int idOeuvre = Integer.parseInt(identifiantComboBox.getSelectedItem().toString());
-                EmpruntControl.rendre(nom, idOeuvre, idExemplaire);
+            int oeuvreId = getOeuvreID();
+            if (oeuvreId != -1 && tableEmpCours.getSelectedRow() >= 0) {
+                int idExemplaire = parseInt(dataLigneSelectedEmprunts[1].toString());
+                int idOeuvre = parseInt(identifiantComboBox.getSelectedItem().toString());
+                EmpruntControl.rendre(dataLigneSelectedEmprunts[2].toString(), idOeuvre, idExemplaire);
                 ((ModelTableau) tableEmpCours.getModel()).removeRow(tableEmpCours.getSelectedRow());
-                JOptionPane.showMessageDialog(null,
-                        "Exemplaire Rendu", "Informations",
-                        JOptionPane.INFORMATION_MESSAGE);
+                showMessageSucces("Exemplaire Rendu");
             }
-            rendreButton.setEnabled(false);
-
-        } catch (BibalExceptions ex) {
+        } catch (BibalExceptions e) {
             System.out.println("IHM.GestionReservationsEmprunts.rendreButtonActionPerformed()");
         }
-    }//GEN-LAST:event_rendreButtonActionPerformed
+    }//GEN-LAST:event_rendre
 
-    private void emprunterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emprunterButtonActionPerformed
+    private void emprunter(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emprunter
 
         String titre = titreLabelValue.getText();
-        Emprunter emprunter = new Emprunter(this, true, titre);
+        GestionEmprunts emprunter = new GestionEmprunts(this, true, titre);
         emprunter.setLocationRelativeTo(null);
         emprunter.setVisible(true);
-    }//GEN-LAST:event_emprunterButtonActionPerformed
+    }//GEN-LAST:event_emprunter
 
     private void affResaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_affResaButtonActionPerformed
         try {
@@ -919,36 +906,40 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
                 }
             }
 
-        } catch (BibalExceptions ex) {
+        } catch (BibalExceptions e) {
             System.out.println("IHM.GestionReservationsEmprunts.affEmpButtonActionPerformed()");
         }
     }//GEN-LAST:event_affResaButtonActionPerformed
 
     private void reserverButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reserverButtonActionPerformed
         String titre = titreLabelValue.getText();
-        Reserver reserver = new Reserver(this, true, titre);
+        GestionReservations reserver = new GestionReservations(this, true, titre);
         reserver.setLocationRelativeTo(null);
         reserver.setVisible(true);
     }//GEN-LAST:event_reserverButtonActionPerformed
 
     private void annulerResaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerResaButtonActionPerformed
         try {
-            String identitfiant = identifiantComboBox.getSelectedItem().toString();
-            if (!identitfiant.equals("Choix ID")) {
-                String titreOeuvre = titreLabelValue.getText();
-                int idUsager = Integer.parseInt(dataLigneSelectedReservations[2].toString());
-                ReservationControl.annuler(idUsager, titreOeuvre);
+            int oeuvreId = getOeuvreID();
+            if (oeuvreId != -1 && tableResaCours.getSelectedRow() >= 0) {
+                int idUsager = parseInt(dataLigneSelectedReservations[2].toString());
+                ReservationControl.annuler(idUsager, titreLabelValue.getText());
                 ((ModelTableau) tableResaCours.getModel()).removeRow(tableResaCours.getSelectedRow());
-                JOptionPane.showMessageDialog(null,
-                        "Réservation annulée ", "Informations",
-                        JOptionPane.INFORMATION_MESSAGE);
+                showMessageSucces("Réservation annulée ");
             }
-            annulerResaButton.setEnabled(false);
 
-        } catch (BibalExceptions ex) {
+        } catch (BibalExceptions e) {
             System.out.println("IHM.GestionReservationsEmprunts.annulerResaButtonActionPerformed()");
         }
     }//GEN-LAST:event_annulerResaButtonActionPerformed
+
+    private int getOeuvreID() {
+        String id = identifiantComboBox.getSelectedItem().toString();
+        if (!id.equals("Choisir identifiant")) {
+            return parseInt(id);
+        }
+        return -1;
+    }
 
     private void fillExemplaireJtable(ArrayList<Exemplaire> listExemplaires) {
         String titre[] = new String[]{"ID", "Etat"};
@@ -1041,7 +1032,7 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
                 identifiantComboBox.addItem(Integer.toString(identifiant));
             }
         } catch (SQLException | BibalExceptions e) {
-            JOptionPane.showMessageDialog(null, "Erreurs d'accès à la base de données",
+            showMessageDialog(null, "Erreurs d'accès à la base de données",
                     "Erreurs", JOptionPane.ERROR_MESSAGE);
         } finally {
             closeStatementResultSet(preparedStatement, resultSet);
@@ -1049,7 +1040,7 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
     }
 
     private Oeuvre getOeuvreInfos() {
-        int id = Integer.parseInt(identifiantComboBox.getSelectedItem().toString());
+        int id = parseInt(identifiantComboBox.getSelectedItem().toString());
         String titre = titreLabelValue.getText();
         String auteur = auteurLabelValue.getText();
         String categorie = categorieLabelValue.getText();
@@ -1062,45 +1053,7 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
         }
         return oeuvre;
     }
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Metal".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(GestionReservationsEmprunts.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(GestionReservationsEmprunts.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(GestionReservationsEmprunts.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(GestionReservationsEmprunts.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new GestionReservationsEmprunts().setVisible(true);
-            }
-        });
-    }
-
+    
     private Object dataLigneSelectedExemplaires[];
     private Object dataLigneSelectedEmprunts[];
     private Object dataLigneSelectedReservations[];

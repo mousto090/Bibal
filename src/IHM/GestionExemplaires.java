@@ -1,12 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package IHM;
 
 import Utility.BibalExceptions;
 import Utility.ModelTableau;
+import static Utility.Utility.showMessageSucces;
 import control.EmpruntControl;
 import control.ExemplaireControl;
 import java.awt.Color;
@@ -18,14 +14,14 @@ import objets_metiers.Exemplaire;
 import objets_metiers.Livre;
 import objets_metiers.Magazine;
 import objets_metiers.Oeuvre;
-
+import static javax.swing.JOptionPane.showConfirmDialog;
 /**
- *
- * @author Jalloh
+ * 
+ * @author Diallo & Janati
  */
-public class Exemplaires extends javax.swing.JDialog implements MouseListener {
+public class GestionExemplaires extends javax.swing.JDialog implements MouseListener {
 
-    public Exemplaires(java.awt.Frame parent, boolean modal) {
+    public GestionExemplaires(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         tableExemplaires.addMouseListener(this);
@@ -35,7 +31,7 @@ public class Exemplaires extends javax.swing.JDialog implements MouseListener {
         tableExemplaires.setRowHeight(30);
     }
 
-    public Exemplaires(java.awt.Frame parent, boolean modal,
+    public GestionExemplaires(java.awt.Frame parent, boolean modal,
             Oeuvre oeuvre) {
         this(parent, modal);
 
@@ -44,7 +40,7 @@ public class Exemplaires extends javax.swing.JDialog implements MouseListener {
         categorieLabelValue.setText(oeuvre.getCategorie());
         typeOeuvreLabelValue.setText(oeuvre.getClass().getSimpleName());
         auteurLabelValue.setText(oeuvre.getAuteur());
-        nbExemplaireLabelValue.setText(oeuvre.getExamplairesOeuvre().size() + ""); 
+        nbExemplaireLabelValue.setText(oeuvre.getExamplairesOeuvre().size() + "");
     }
 
     /**
@@ -84,6 +80,7 @@ public class Exemplaires extends javax.swing.JDialog implements MouseListener {
         titleLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Gestion Exemplaire");
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -232,7 +229,7 @@ public class Exemplaires extends javax.swing.JDialog implements MouseListener {
         retirerButton.setPreferredSize(new java.awt.Dimension(95, 31));
         retirerButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                retirerButtonActionPerformed(evt);
+                retirer(evt);
             }
         });
 
@@ -240,7 +237,7 @@ public class Exemplaires extends javax.swing.JDialog implements MouseListener {
         afficherButton.setText("Afficher");
         afficherButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                afficherButtonActionPerformed(evt);
+                afficher(evt);
             }
         });
 
@@ -402,9 +399,12 @@ public class Exemplaires extends javax.swing.JDialog implements MouseListener {
     }// </editor-fold>//GEN-END:initComponents
 
     private void ajouterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ajouterButtonActionPerformed
-        AjoutExemplaire ajoutExemplaire = new AjoutExemplaire(null, true, getOeuvreInfos());
-        ajoutExemplaire.setLocationRelativeTo(null);
-        ajoutExemplaire.setVisible(true);
+        Oeuvre oeuvre = getOeuvreInfos();
+        if (null != oeuvre) {
+            AjoutExemplaire ajoutExemplaire = new AjoutExemplaire(null, true, oeuvre);
+            ajoutExemplaire.setLocationRelativeTo(null);
+            ajoutExemplaire.setVisible(true);
+        }
     }//GEN-LAST:event_ajouterButtonActionPerformed
 
     private void annulerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerButtonActionPerformed
@@ -412,58 +412,54 @@ public class Exemplaires extends javax.swing.JDialog implements MouseListener {
     }//GEN-LAST:event_annulerButtonActionPerformed
 
     private void modifierButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifierButtonActionPerformed
-        int id = Integer.parseInt(dataLigneSelected[0].toString());
-        String etatExemplaire = dataLigneSelected[1].toString();
 
-        ModificationExemplaire modificationExemplaire = new ModificationExemplaire(null, true,
-                new Exemplaire(id, etatExemplaire));
-        modificationExemplaire.setLocationRelativeTo(null);
-        modificationExemplaire.setVisible(true);
+        Exemplaire exemplaire = getExempalireInfos();
+        if (null != exemplaire) {
+            ModificationExemplaire modificationExemplaire
+                    = new ModificationExemplaire(null, true, exemplaire);
+            modificationExemplaire.setLocationRelativeTo(null);
+            modificationExemplaire.setVisible(true);
+        }
     }//GEN-LAST:event_modifierButtonActionPerformed
 
-    private void afficherButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afficherButtonActionPerformed
+    private void afficher(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afficher
         try {
             Oeuvre oeuvre = getOeuvreInfos();
             ArrayList<Exemplaire> listExemplaires = ExemplaireControl.find(oeuvre);
             if (null != listExemplaires) {
                 fillExemplaireJtable(listExemplaires);
             } else {
-                JOptionPane.showMessageDialog(null,
-                        "Aucun exemplaire trouvé", "Informations",
-                        JOptionPane.INFORMATION_MESSAGE);
+                showMessageSucces("Aucun exemplaire trouvé");
             }
 
-        } catch (BibalExceptions ex) {
+        } catch (BibalExceptions e) {
             System.out.println("IHM.GestionOeuvre.afficherButtonActionPerformed()");
         }
-    }//GEN-LAST:event_afficherButtonActionPerformed
-//Faire une fonction qui recupère les données de dataLigneSelected cest mieux
-//        et remplacer dans tous le code dataLigneSelected des que possible
-    private void retirerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_retirerButtonActionPerformed
-        int id = Integer.parseInt(dataLigneSelected[0].toString());
-        String etatExemplaire = dataLigneSelected[1].toString();
+    }//GEN-LAST:event_afficher
 
+    private void retirer(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_retirer
         String message = "\nSupprimer cet exempalaire ?\n"
                 + "Cela supprimera aussi tous les emprunts de cet exemplaire\n";
 
-        int reponse = JOptionPane.showConfirmDialog(null, message,
+        int reponse = showConfirmDialog(null, message,
                 "Avertissement", JOptionPane.OK_CANCEL_OPTION);
         if (reponse == JOptionPane.OK_OPTION) {
             try {
-                Exemplaire exemplaire = new Exemplaire(id, etatExemplaire);
-                EmpruntControl.supprimer(exemplaire);
-                ExemplaireControl.supprimer(exemplaire);
-                ((ModelTableau) tableExemplaires.getModel()).removeRow(tableExemplaires.getSelectedRow());
-                JOptionPane.showMessageDialog(null, "L'exemplaire a bien été supprimée",
-                        "Informations", JOptionPane.INFORMATION_MESSAGE);
-                modifierButton.setEnabled(false);
-                retirerButton.setEnabled(false);
+                Exemplaire exemplaire = getExempalireInfos();
+                if (null != exemplaire) {
+                    EmpruntControl.supprimer(exemplaire);
+                    ExemplaireControl.supprimer(exemplaire);
+                    ((ModelTableau) tableExemplaires.getModel()).removeRow(tableExemplaires.getSelectedRow());
+                    showMessageSucces("L'exemplaire a bien été supprimée");
+                    modifierButton.setEnabled(false);
+                    retirerButton.setEnabled(false);
+                }
 
             } catch (BibalExceptions ex) {
                 System.out.println("IHM.Exemplaires.retirerButtonActionPerformed()" + ex.getMessage());
             }
         }
-    }//GEN-LAST:event_retirerButtonActionPerformed
+    }//GEN-LAST:event_retirer
 
     private Oeuvre getOeuvreInfos() {
         int id = Integer.parseInt(identifiantLabelValue.getText());
@@ -478,6 +474,12 @@ public class Exemplaires extends javax.swing.JDialog implements MouseListener {
             oeuvre = new Livre(id, titre, auteur, categorie);
         }
         return oeuvre;
+    }
+
+    private Exemplaire getExempalireInfos() {
+        int id = Integer.parseInt(dataLigneSelected[0].toString());
+        String etatExemplaire = dataLigneSelected[1].toString();
+        return new Exemplaire(id, etatExemplaire);
     }
 
     private void fillExemplaireJtable(ArrayList<Exemplaire> listExemplaires) {
@@ -540,54 +542,11 @@ public class Exemplaires extends javax.swing.JDialog implements MouseListener {
     }
 
     public static void setNbExemplaireLabelValue(String value) {
-        Exemplaires.nbExemplaireLabelValue.setText(value);
+        GestionExemplaires.nbExemplaireLabelValue.setText(value);
     }
 
     public static String getNbExemplaireLabelValue() {
         return nbExemplaireLabelValue.getText();
-    }
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Metal".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Exemplaires.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Exemplaires.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Exemplaires.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Exemplaires.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                Exemplaires dialog = new Exemplaires(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
     }
 
     private Object dataLigneSelected[];

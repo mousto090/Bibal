@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package IHM;
 
 import java.awt.Dimension;
@@ -10,18 +5,15 @@ import java.awt.Toolkit;
 
 /**
  *
- * @author SIMO
+ * @author Diallo & Janati
  */
 public class Authentification extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Authentification
-     */
     public Authentification() {
-        
+
         initComponents();
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+        this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
         setResizable(false);
     }
 
@@ -42,6 +34,7 @@ public class Authentification extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Authentification");
         setBackground(new java.awt.Color(204, 204, 255));
         setLocationByPlatform(true);
         setMaximumSize(new java.awt.Dimension(510, 230));
@@ -85,8 +78,7 @@ public class Authentification extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void ConnecterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConnecterActionPerformed
-        // TODO add your handling code here:
-        Menu m =new Menu();
+        Menu m = new Menu();
         this.dispose();
         m.setVisible(true);
     }//GEN-LAST:event_ConnecterActionPerformed
@@ -108,13 +100,13 @@ public class Authentification extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Authentification.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Menu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Authentification.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Menu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Authentification.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Menu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Authentification.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Menu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -125,7 +117,6 @@ public class Authentification extends javax.swing.JFrame {
             }
         });
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Connecter;
     private javax.swing.JTextField LoginText;

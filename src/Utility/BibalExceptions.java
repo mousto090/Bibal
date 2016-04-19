@@ -15,7 +15,7 @@ public class BibalExceptions extends Exception{
 
     public BibalExceptions(String message) {
         super(message);
-        JOptionPane.showMessageDialog(null, message, "Erreurs", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, message, "Informations", JOptionPane.PLAIN_MESSAGE);
     }
     
     public BibalExceptions(Throwable cause) {

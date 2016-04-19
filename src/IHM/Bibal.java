@@ -6,11 +6,9 @@
 package IHM;
 
 import Utility.BibalExceptions;
-import static Utility.Utility.formatDate;
-import control.UsagerControl;
+import control.EmpruntControl;
 import objets_metiers.Livre;
 import objets_metiers.Magazine;
-import objets_metiers.Usager;
 
 /**
  *
@@ -80,6 +78,8 @@ public class Bibal {
 //        ================ Test Emprunt ===========
        // EmpruntControl.emprunter(1, "Magazine 3");
 //        EmpruntControl.emprunter(3, "Magazine 4");
+        System.out.println("IHM.Bibal.main()" +
+                EmpruntControl.findEmprunts(new Livre(1,"Livre 12", "Auteur 1", "Categorie 1", 2)));
 //        Oeuvre o = new Livre(1, "Magazine 1", "Auteur 1", "Categorie 1", 2);
 //        System.out.println("bibal.Bibal.main()" + o.estReservable());
 //        Calendar cal = Calendar.getInstance();      
@@ -87,7 +87,7 @@ public class Bibal {
 //        cal.add(Calendar.DATE, 10);
 //        Date d = cal.getTime();
 //        System.out.println("bibal.Bibal.main()" + dateToStr(d));
-          System.out.println("IHM.Bibal.main()" + String.format("2016-04-07","dd/MM/yyyy" ));
+//          System.out.println("IHM.Bibal.main()" + String.format("2016-04-07","dd/MM/yyyy" ));
     }
 
 }

@@ -36,20 +36,15 @@ public class Exemplaires extends javax.swing.JDialog implements MouseListener {
     }
 
     public Exemplaires(java.awt.Frame parent, boolean modal,
-            Oeuvre oeuvre, String typeOeuvre) {
+            Oeuvre oeuvre) {
         this(parent, modal);
-        //typeOeuvreCombo.setSelectedItem(typeOeuvre);
+
         identifiantLabelValue.setText(oeuvre.getId() + "");
         titreLabelValue.setText(oeuvre.getTitre());
         categorieLabelValue.setText(oeuvre.getCategorie());
-        typeOeuvreLabelValue.setText(typeOeuvre);
+        typeOeuvreLabelValue.setText(oeuvre.getClass().getSimpleName());
         auteurLabelValue.setText(oeuvre.getAuteur());
-        nbExemplaireLabelValue.setText(oeuvre.getExamplairesOeuvre().size() + "");
-        if (nbExemplaireLabelValue.getText().equals("0")) {
-            afficherButton.setEnabled(false);
-        } else {
-            afficherButton.setEnabled(true);
-        }
+        nbExemplaireLabelValue.setText(oeuvre.getExamplairesOeuvre().size() + ""); 
     }
 
     /**
@@ -442,7 +437,8 @@ public class Exemplaires extends javax.swing.JDialog implements MouseListener {
             System.out.println("IHM.GestionOeuvre.afficherButtonActionPerformed()");
         }
     }//GEN-LAST:event_afficherButtonActionPerformed
-
+//Faire une fonction qui recupère les données de dataLigneSelected cest mieux
+//        et remplacer dans tous le code dataLigneSelected des que possible
     private void retirerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_retirerButtonActionPerformed
         int id = Integer.parseInt(dataLigneSelected[0].toString());
         String etatExemplaire = dataLigneSelected[1].toString();

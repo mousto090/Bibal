@@ -56,6 +56,7 @@ public class AjoutExemplaire extends javax.swing.JDialog {
         annulerBouton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Ajouter Exemplaire");
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setName("Gestion personnel"); // NOI18N

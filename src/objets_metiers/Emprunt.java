@@ -6,7 +6,6 @@ import static Utility.Utility.YMDtoDMY;
 import static Utility.Utility.closeStatement;
 import static Utility.Utility.closeStatementResultSet;
 import static Utility.Utility.dateToStr;
-import static Utility.Utility.formatDate;
 import static Utility.Utility.initialiseRequetePreparee;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,16 +31,10 @@ public class Emprunt {
         exemplairesEmprunt = new Exemplaire();
     }
 
-    public Emprunt(Oeuvre o, Exemplaire e, Date dateJour) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void find(Usager usager, int examplaire, Oeuvre oeuvre) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Emprunt find(Usager usager, Exemplaire examplaire) {
-        throw new UnsupportedOperationException();
+    public Emprunt(int id, Date dateEmprunt, Date dateRetourPrevu) {
+        this.id = id;
+        this.dateEmprunt = dateEmprunt;
+        this.dateRetourPrevu = dateRetourPrevu;
     }
 
     public int getId() {
@@ -74,8 +67,8 @@ public class Emprunt {
     }
 
     public void setDateEmprunt(Date dateEmprunt) throws BibalExceptions {
-        if(null == dateEmprunt){
-            throw  new BibalExceptions("Veuillez renseigner la date d'emprunt");
+        if (null == dateEmprunt) {
+            throw new BibalExceptions("Veuillez renseigner la date d'emprunt");
         }
         this.dateEmprunt = dateEmprunt;
     }
@@ -92,15 +85,31 @@ public class Emprunt {
         this.dateRetourPrevu = dateRetourPrevu;
     }
 
+    public Exemplaire getExemplairesEmprunt() {
+        return exemplairesEmprunt;
+    }
+
+    public void setExemplairesEmprunt(Exemplaire exemplairesEmprunt) {
+        this.exemplairesEmprunt = exemplairesEmprunt;
+    }
+
+    public Usager getUsagerEmprunt() {
+        return usagerEmprunt;
+    }
+
+    public void setUsagerEmprunt(Usager usagerEmprunt) {
+        this.usagerEmprunt = usagerEmprunt;
+    }
+
     public void emprunter(Usager usager, Oeuvre oeuvre, Exemplaire exemplaire, Date dateJour) throws BibalExceptions {
         Emprunt emprunt = findEmpruntNonRendu(usager, oeuvre);
         if (null != emprunt) {
             throw new BibalExceptions("Vous avez un emprunt d'exemplaire de cette oeuvre non rendu\n"
                     + "Titre Oeuvre : " + oeuvre.getTitre() + "\n"
-                    + "Date d'emprunt : " + YMDtoDMY(emprunt.getDateEmprunt().toString(),"-") + "\n"
-                    + "Date de retour Prévu : " + YMDtoDMY(emprunt.getDateRetourPrevu().toString(),"-"));
+                    + "Date d'emprunt : " + YMDtoDMY(emprunt.getDateEmprunt().toString(), "-") + "\n"
+                    + "Date de retour Prévu : " + YMDtoDMY(emprunt.getDateRetourPrevu().toString(), "-"));
         }
-        
+
 //        if(oeuvre.estReservable()== true){
 //            //il n'y a aucun exempalaire il faudra réserver l'oeuvre
 //            return false;
@@ -139,6 +148,23 @@ public class Emprunt {
         }
     }
 
+    public void delete(Exemplaire exemplaire) throws BibalExceptions {
+        final String SQL_DELETE_BY_ID = "DELETE FROM emprunt WHERE ExemplaireId = ? ";
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = initialiseRequetePreparee(DBConnection.getConnection(), SQL_DELETE_BY_ID,
+                    exemplaire.getId());
+            int statut = preparedStatement.executeUpdate();
+//            if (statut == 0) {
+//                throw new BibalExceptions("Echec de la suppression des emprunts de l'exemplaire");
+//            }
+        } catch (SQLException | BibalExceptions e) {
+            throw new BibalExceptions("Erreurs lors de la suppression des emprunts de l'exemplaire ", e.getCause());
+        } finally {
+            closeStatement(preparedStatement);
+        }
+    }
+
     //pour voir s'il a deja emprunté un exemplaire de cet oeuvre non rendu
     //il peut pas emprunter plusieurs exemplaire de la meme oeuvre
     public Emprunt findEmpruntNonRendu(Usager usager, Oeuvre oeuvre) throws BibalExceptions {
@@ -152,7 +178,56 @@ public class Emprunt {
                 + " AND o.id = ?";
         ArrayList<Emprunt> emprunts
                 = find(SQL_SELECT_BY_ID_OEUVRE_USAGER, usager.getId(), oeuvre.getId());
+        return ((emprunts == null) || (emprunts.isEmpty())) ? null : emprunts.get(0);
+    }
+
+    public ArrayList<Emprunt> findEmprunts(Oeuvre oeuvre) throws BibalExceptions {
+        final String SQL_SELECT_BY_ID_OEUVRE_USAGER = "SELECT emp.*, u.Nom, u.Prenom, o.id, o.Titre, o.Auteur"
+                + " FROM emprunt emp, exemplaire e, usager u, oeuvre o"
+                + " WHERE emp.ExemplaireId = e.id"
+                + " AND emp.UsagerID = u.id"
+                + " AND e.OeuvreID = o.id"
+                + " AND emp.DateRetourEffective IS NULL"
+                + " AND o.id = ?";
+        ArrayList<Emprunt> emprunts
+                = find(SQL_SELECT_BY_ID_OEUVRE_USAGER, oeuvre.getId());
+
+        return emprunts.isEmpty() ? null : emprunts;
+    }
+
+    public Emprunt find(Usager usager, int idExemplaire, Oeuvre oeuvre) throws BibalExceptions {
+        final String SQL_SELECT = "SELECT emp.*, u.Nom, u.Prenom, o.id, o.Titre, o.Auteur"
+                + " FROM emprunt emp, exemplaire e, usager u, oeuvre o"
+                + " WHERE emp.ExemplaireId = e.id"
+                + " AND emp.UsagerID = u.id"
+                + " AND e.OeuvreID = o.id"
+                + " AND emp.UsagerID = ?"
+                + " AND emp.ExemplaireId = ?"
+                + " AND o.id = ? ";
+        ArrayList<Emprunt> emprunts
+                = find(SQL_SELECT, usager.getId(), idExemplaire, oeuvre.getId());
         return emprunts.isEmpty() ? null : emprunts.get(0);
+    }
+
+    public void Rendre(Emprunt emprunt) throws BibalExceptions {
+        final String SQL_UPDATE = "UPDATE emprunt "
+                + " SET DateRetourEffective = ? WHERE id = ?";
+        Calendar cal = Calendar.getInstance();
+        String DateRetEffective = dateToStr(cal.getTime());
+
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = initialiseRequetePreparee(DBConnection.getConnection(), SQL_UPDATE,
+                    DateRetEffective, emprunt.getId());
+            int statut = preparedStatement.executeUpdate();
+            if (statut == 0) {
+                throw new BibalExceptions("Echec de l'enregistrement du retour de l'exemplaire");
+            }
+        } catch (SQLException e) {
+            throw new BibalExceptions("Erreurs lors de l'enregistrement du retour de l'exemplaire ", e.getCause());
+        } finally {
+            closeStatement(preparedStatement);
+        }
     }
 //    public Emprunt findByEmprunt(Usager usager, Exemplaire exemplaire) throws BibalExceptions {
 //        final String SQL_SELECT_BY_ID_OEUVRE_USAGER = "SELECT emp.*, u.Nom, u.Prenom"
@@ -194,11 +269,20 @@ public class Emprunt {
             emprunt.setDateEmprunt(resultSet.getDate("DateEmprunt"));
             emprunt.setDateRetourPrevu(resultSet.getDate("DateRetourPrevu"));
             emprunt.setDateRetourEffective(resultSet.getDate("DateRetourEffective"));
-            //emprunt.usagerEmprunt.setId(0);
+            emprunt.usagerEmprunt.setId(resultSet.getInt("UsagerID"));
+            emprunt.usagerEmprunt.setNom(resultSet.getString("u.Nom"));
+            emprunt.usagerEmprunt.setPrenom(resultSet.getString("u.Prenom"));
+            emprunt.exemplairesEmprunt.setId(resultSet.getInt("ExemplaireId"));
 
         } catch (BibalExceptions e) {
             System.out.println(e.getMessage());
         }
         return emprunt;
     }
+
+    @Override
+    public String toString() {
+        return "Emprunt{" + "id=" + id + ", dateEmprunt=" + dateEmprunt + ", dateRetourPrevu=" + dateRetourPrevu + ", dateRetourEffective=" + dateRetourEffective + ", usagerEmprunt=" + usagerEmprunt + ", exemplairesEmprunt=" + exemplairesEmprunt + '}';
+    }
+
 }

@@ -95,10 +95,10 @@ public class Reservation {
     public void reserver(Usager usager, Oeuvre oeuvre, Date dateJour) throws BibalExceptions {
 
         //si un exemplaire de l'oeuvre est disponible, reservation impossible
-        if(oeuvre.estReservable()== false){
-            throw new BibalExceptions("Vous pouvez pas réserver cette oeuvre\n"
-                    + "Des exemplaires sont disponibles");
-        }
+//        if(oeuvre.estReservable()== false){
+//            throw new BibalExceptions("Vous pouvez pas réserver cette oeuvre\n"
+//                    + "Des exemplaires sont disponibles");
+//        }
         Reservation reservation = findByReservation(usager, oeuvre);
         if (null != reservation) {
             throw new BibalExceptions("Vous avez déjà réserver l'oeuvre '" + oeuvre.getTitre()
@@ -175,6 +175,14 @@ public class Reservation {
         return reservations.isEmpty() ? null : reservations.get(0);
     }
 
+    public ArrayList<Reservation> findByReservation(Oeuvre oeuvre) throws BibalExceptions {
+        final String SQL_SELECT_BY_ID_OEUVRE = SQL_SELECT_JOINTURE 
+                + " OeuvreID = ? "
+                + " AND DateAnnulation IS NULL";
+        ArrayList<Reservation> reservations
+                = find(SQL_SELECT_BY_ID_OEUVRE, oeuvre.getId());
+        return (reservations == null || reservations.isEmpty()) ? null : reservations;
+    }
     private ArrayList<Reservation> find(String sql, Object... objets) throws BibalExceptions {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -203,7 +211,7 @@ public class Reservation {
             reservation.dateAnnulation = resultSet.getDate("DateAnnulation");
             reservation.oeuvresReservation.setId(resultSet.getInt("OeuvreID"));
             reservation.oeuvresReservation.setTitre(resultSet.getString("Titre"));
-            reservation.usagerReservation.setId(resultSet.getInt("id"));
+            reservation.usagerReservation.setId(resultSet.getInt("UsagerID"));
             reservation.usagerReservation.setNom(resultSet.getString("nom"));
             reservation.usagerReservation.setPrenom(resultSet.getString("prenom"));
         } catch (BibalExceptions e) {

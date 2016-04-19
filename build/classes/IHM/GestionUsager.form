@@ -551,9 +551,6 @@
                       <Dimension value="[123, 26]"/>
                     </Property>
                   </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="civiliteComboActionPerformed"/>
-                  </Events>
                 </Component>
                 <Component class="org.jdesktop.swingx.JXDatePicker" name="dateNaisPicker">
                   <Properties>
@@ -604,7 +601,7 @@
                 <Property name="text" type="java.lang.String" value="Ajouter"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ajouterBoutonActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ajouter"/>
               </Events>
             </Component>
             <Component class="javax.swing.JButton" name="modifierBouton">

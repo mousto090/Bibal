@@ -40,7 +40,7 @@ public class ReservationControl {
         }
         Oeuvre oeuvre = new Oeuvre();
         ArrayList<Oeuvre> oeuvres = oeuvre.findByTitre(titre);
-        oeuvre = oeuvres==null ? null : oeuvres.get(0);
+        oeuvre = (oeuvres==null) ? null : oeuvres.get(0);
 
         if (null == oeuvre) {
             throw new BibalExceptions("L'oeuvre n'existe pas");
@@ -74,5 +74,10 @@ public class ReservationControl {
     public static Reservation findByReservation(Usager usager, Oeuvre oeuvre) throws BibalExceptions {
         Reservation reservation = new Reservation();
         return reservation.findByReservation(usager, oeuvre);
+    }
+    
+    public static ArrayList<Reservation> findByReservation(Oeuvre oeuvre) throws BibalExceptions {
+        Reservation reservation = new Reservation();
+        return reservation.findByReservation(oeuvre);
     }
 }

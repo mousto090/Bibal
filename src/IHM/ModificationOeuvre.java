@@ -7,8 +7,8 @@ package IHM;
 
 import Utility.BibalExceptions;
 import Utility.ModelTableau;
+import static Utility.Utility.showMessageSucces;
 import control.OeuvreControl;
-import javax.swing.JOptionPane;
 import objets_metiers.Livre;
 import objets_metiers.Magazine;
 import objets_metiers.Oeuvre;
@@ -26,12 +26,12 @@ public class ModificationOeuvre extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
     }
-    
+
     public ModificationOeuvre(java.awt.Frame parent, boolean modal,
-            Oeuvre oeuvre, String typeOeuvre) {
+            Oeuvre oeuvre) {
         this(parent, modal);
-        typeOeuvreCombo.setSelectedItem(typeOeuvre);
-        identifiantField.setText(oeuvre.getId()+"");
+        typeOeuvreCombo.setSelectedItem(oeuvre.getClass().getSimpleName());
+        identifiantField.setText(oeuvre.getId() + "");
         titreField.setText(oeuvre.getTitre());
         auteurField.setText(oeuvre.getAuteur());
         categorieField.setText(oeuvre.getCategorie());
@@ -247,30 +247,35 @@ public class ModificationOeuvre extends javax.swing.JDialog {
     private void modifierBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifierBoutonActionPerformed
 
         try {
-            int id = Integer.parseInt(identifiantField.getText());
-            String titre = titreField.getText();
-            String auteur = auteurField.getText();
-            String categorie = categorieField.getText();
-            String typeOeuvre = typeOeuvreCombo.getSelectedItem().toString();
-            if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
-                OeuvreControl.modifier(new Magazine(id,titre, auteur, categorie));
-            } else {
-                OeuvreControl.modifier(new Livre(id,titre, auteur, categorie));
-            }
+            Oeuvre oeuvre = getOeuvreInfos();
+            OeuvreControl.ajouter(oeuvre);
             ((ModelTableau) GestionOeuvresExemplaires.tableListeOeuvre.getModel())
                     .updateRow(
-                    new Object[]{id, titre, auteur, categorie, typeOeuvre, 0, 0}, 
+                            new Object[]{oeuvre.getId(), oeuvre.getTitre(), oeuvre.getAuteur(),
+                                oeuvre.getCategorie(), oeuvre.getClass().getSimpleName(), 0, 0},
                             GestionOeuvresExemplaires.tableListeOeuvre.getSelectedRow());
-            JOptionPane.showMessageDialog(null, "Oeuvre modifiée avec succès", "Informations", JOptionPane.INFORMATION_MESSAGE);
-
-        } catch (BibalExceptions ex) {
-            ex.printStackTrace();
+            showMessageSucces("Oeuvre modifiée avec succès");
+        } catch (BibalExceptions e) {
+            System.out.println("IHM.ModificationOeuvre.modifierBoutonActionPerformed()");
         }
     }//GEN-LAST:event_modifierBoutonActionPerformed
 
     private void annulerBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerBoutonActionPerformed
         this.dispose();
     }//GEN-LAST:event_annulerBoutonActionPerformed
+
+    private Oeuvre getOeuvreInfos() {
+        int identifiant = Integer.parseInt(identifiantField.getText());
+        String titre = titreField.getText();
+        String auteur = auteurField.getText();
+        String categorie = categorieField.getText();
+        String typeOeuvre = typeOeuvreCombo.getSelectedItem().toString();
+
+        if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
+            return new Magazine(identifiant, titre, auteur, categorie);
+        }
+        return new Livre(identifiant, titre, auteur, categorie);
+    }
 
     /**
      * @param args the command line arguments

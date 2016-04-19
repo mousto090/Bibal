@@ -7,14 +7,17 @@ package IHM;
 
 import Utility.BibalExceptions;
 import Utility.ModelTableau;
+import static Utility.Utility.showMessageSucces;
 import control.OeuvreControl;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import static java.lang.Integer.parseInt;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.showConfirmDialog;
 import objets_metiers.Livre;
 import objets_metiers.Magazine;
 import objets_metiers.Oeuvre;
@@ -327,14 +330,17 @@ public class GestionOeuvresExemplaires extends javax.swing.JFrame implements Mou
         String rechPar = RecherchCombo.getSelectedItem().toString();
         String textARechercher = RecherchField.getText().trim();
         if (textARechercher.length() > 0) {
-            ArrayList<Oeuvre> listOeuvres = new ArrayList<>();
+            ArrayList<Oeuvre> listOeuvres;
             try {
                 switch (rechPar) {
                     case "Identifiant":
-                        int identifiant = Integer.parseInt(textARechercher);
+                        int identifiant = parseInt(textARechercher);
                         Oeuvre oeuvre = OeuvreControl.findById(identifiant);
-                        listOeuvres.add(oeuvre);
-                        fillOeuvreJtable(listOeuvres);
+                        fillOeuvreJtable(new ArrayList<Oeuvre>() {
+                            {
+                                add(oeuvre);
+                            }
+                        });
                         break;
                     case "Titre":
                         listOeuvres = OeuvreControl.findByTitre(textARechercher);
@@ -348,7 +354,7 @@ public class GestionOeuvresExemplaires extends javax.swing.JFrame implements Mou
             } catch (BibalExceptions e) {
                 System.out.println("IHM.GestionUsager.RecherchBoutonActionPerformed() : Erreurs");
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "Identifiant non valide", "Informations", JOptionPane.INFORMATION_MESSAGE);
+                showMessageSucces("Identifiant non valide");
             }
         }
     }//GEN-LAST:event_RecherchBoutonActionPerformed
@@ -366,7 +372,7 @@ public class GestionOeuvresExemplaires extends javax.swing.JFrame implements Mou
             }
         } else {
             RecherchBouton.setEnabled(true);
-            RecherchField.setEditable(true);
+            RecherchField.setEnabled(true);
         }
     }//GEN-LAST:event_RecherchComboActionPerformed
 
@@ -378,21 +384,12 @@ public class GestionOeuvresExemplaires extends javax.swing.JFrame implements Mou
     }//GEN-LAST:event_ajouterBoutonActionPerformed
 
     private void modifierBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifierBoutonActionPerformed
-        ModificationOeuvre modificationOeuvre;
-        int id = Integer.parseInt(dataLigneSelected[0].toString());
-        String titre = dataLigneSelected[1].toString();
-        String auteur = dataLigneSelected[2].toString();
-        String categorie = dataLigneSelected[3].toString();
-        String typeOeuvre = dataLigneSelected[4].toString();
-        if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
-            modificationOeuvre = new ModificationOeuvre(this, true,
-                    new Magazine(id, titre, auteur, categorie), typeOeuvre);
-        } else {
-            modificationOeuvre = new ModificationOeuvre(this, true,
-                    new Livre(id, titre, auteur, categorie), typeOeuvre);
+        Oeuvre oeuvre = getOeuvreInfos();
+        if (null != oeuvre) {
+            ModificationOeuvre modificationOeuvre = new ModificationOeuvre(this, true, oeuvre);
+            modificationOeuvre.setLocationRelativeTo(null);
+            modificationOeuvre.setVisible(true);
         }
-        modificationOeuvre.setLocationRelativeTo(null);
-        modificationOeuvre.setVisible(true);
     }//GEN-LAST:event_modifierBoutonActionPerformed
 
     private void afficherButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afficherButtonActionPerformed
@@ -407,33 +404,25 @@ public class GestionOeuvresExemplaires extends javax.swing.JFrame implements Mou
     private void supprimerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_supprimerButtonActionPerformed
 
         try {
-            int id = Integer.parseInt(dataLigneSelected[0].toString());
-            int nbExemplaire = Integer.parseInt(dataLigneSelected[5].toString());
+            Oeuvre oeuvre = getOeuvreInfos();
             String message;
-            if (nbExemplaire > 0) {
-                message = "Vous ne pouvez pas supprimer cette oeuvre\n"
-                        + " Elle a " + nbExemplaire + " exemplaire"
-                        + (nbExemplaire > 1 ? "s" : "");
-                JOptionPane.showMessageDialog(null, message,
-                        "Informations", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                message = "Cette oeuvre a " + nbExemplaire + " exemplaire\n"
-                        + "\n Voulez-vous la supprimer ?";
-                int reponse = JOptionPane.showConfirmDialog(null, message,
-                        "Avertissement", JOptionPane.OK_CANCEL_OPTION);
-                if (reponse == JOptionPane.OK_OPTION) {
-                    String titre = dataLigneSelected[1].toString();
-                    String auteur = dataLigneSelected[2].toString();
-                    String categorie = dataLigneSelected[3].toString();
-                    String typeOeuvre = dataLigneSelected[4].toString();
-                    if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
-                        OeuvreControl.supprimer(new Magazine(id, titre, auteur, categorie));
-                    } else {
-                        OeuvreControl.supprimer(new Livre(id, titre, auteur, categorie));
+            if (null != oeuvre) {
+                if (oeuvre.getExamplairesOeuvre().size() > 0) {
+                    message = "Vous ne pouvez pas supprimer cette oeuvre\n"
+                            + " Elle a " + oeuvre.getExamplairesOeuvre().size() + " exemplaire"
+                            + (oeuvre.getExamplairesOeuvre().size() > 1 ? "s" : "");
+                    showMessageSucces(message);
+                } else {
+                    message = "Cette oeuvre a " + oeuvre.getExamplairesOeuvre().size() + " exemplaire\n"
+                            + "\n Voulez-vous la supprimer ?";
+                    int reponse = showConfirmDialog(null, message,
+                            "Avertissement", JOptionPane.OK_CANCEL_OPTION);
+                    if (reponse == JOptionPane.OK_OPTION) {
+                        OeuvreControl.supprimer(oeuvre);
+                        ((ModelTableau) tableListeOeuvre.getModel()).removeRow(tableListeOeuvre.getSelectedRow());
+                        showMessageSucces("L'Oeuvre a bien été supprimée");
+
                     }
-                    ((ModelTableau) tableListeOeuvre.getModel()).removeRow(tableListeOeuvre.getSelectedRow());
-                    JOptionPane.showMessageDialog(null, "L'Oeuvre a bien été supprimée",
-                            "Informations", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
 
@@ -443,24 +432,35 @@ public class GestionOeuvresExemplaires extends javax.swing.JFrame implements Mou
     }//GEN-LAST:event_supprimerButtonActionPerformed
 
     private void exemplaireButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exemplaireButtonActionPerformed
-        Exemplaires exemplaires;
-        int id = Integer.parseInt(dataLigneSelected[0].toString());
-        String titre = dataLigneSelected[1].toString();
-        String auteur = dataLigneSelected[2].toString();
-        String categorie = dataLigneSelected[3].toString();
-        String typeOeuvre = dataLigneSelected[4].toString();
-        int nbExemplaire = Integer.parseInt(dataLigneSelected[5].toString());
-        Oeuvre oeuvre;
-        if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
-            oeuvre = new Magazine(id, titre, auteur, categorie);
-        } else {
-            oeuvre = new Livre(id, titre, auteur, categorie);
+        Oeuvre oeuvre = getOeuvreInfos();
+        if (null != oeuvre) {
+            Exemplaires exemplaires = new Exemplaires(this, true, getOeuvreInfos());
+            exemplaires.setLocationRelativeTo(null);
+            exemplaires.setVisible(true);
         }
-        oeuvre.getExamplairesOeuvre().setSize(nbExemplaire);
-        exemplaires = new Exemplaires(this, true, oeuvre, typeOeuvre);
-        exemplaires.setLocationRelativeTo(null);
-        exemplaires.setVisible(true);
     }//GEN-LAST:event_exemplaireButtonActionPerformed
+
+    private Oeuvre getOeuvreInfos() {
+        Oeuvre oeuvre = null;
+        if (tableListeOeuvre.getSelectedRow() != -1) {
+            int id = parseInt(dataLigneSelected[0].toString());
+            String titre = dataLigneSelected[1].toString();
+            String auteur = dataLigneSelected[2].toString();
+            String categorie = dataLigneSelected[3].toString();
+            String typeOeuvre = dataLigneSelected[4].toString();
+            int nbExemplaire = parseInt(dataLigneSelected[5].toString());
+            int nbResa = parseInt(dataLigneSelected[6].toString());
+
+            if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
+                oeuvre = new Magazine(id, titre, auteur, categorie, nbResa);
+            } else {
+                oeuvre = new Livre(id, titre, auteur, categorie, nbResa);
+            }
+            oeuvre.getExamplairesOeuvre().setSize(nbExemplaire);
+        }
+        return oeuvre;
+
+    }
 
     private void fillOeuvreJtable(ArrayList<Oeuvre> listOeuvres) {
         String titre[] = new String[]{"ID", "Titre",

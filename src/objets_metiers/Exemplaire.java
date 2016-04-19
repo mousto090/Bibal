@@ -14,8 +14,17 @@ import java.util.Vector;
 public class Exemplaire {
 
     private int id;
+    private String etat;
     private Vector<Emprunt> empruntsExamplaire = new Vector<Emprunt>();
     private Oeuvre oeuvresExamplaire = new Oeuvre();
+
+    public Exemplaire() {
+    }
+
+    public Exemplaire(int id, String etat) {
+        this.id = id;
+        this.etat = etat;
+    }
 
     public int getId() {
         return id;
@@ -28,6 +37,14 @@ public class Exemplaire {
         this.id = id;
     }
 
+    public String getEtat() {
+        return etat;
+    }
+
+    public void setEtat(String etat) {
+        this.etat = etat;
+    }
+
     public Oeuvre getOeuvresExamplaire() {
         return oeuvresExamplaire;
     }
@@ -36,14 +53,14 @@ public class Exemplaire {
         this.oeuvresExamplaire = oeuvresExamplaire;
     }
 
-    public void ajouter(Oeuvre oeuvre) throws BibalExceptions {
+    public void ajouter(Oeuvre oeuvre, String etatExemplaire) throws BibalExceptions {
         final String SQL_INSERT = "INSERT INTO exemplaire "
-                + "( OeuvreID ) VALUES ( ? )";
+                + "( OeuvreID, Etat) VALUES ( ?, ? )";
         PreparedStatement preparedStatement = null;
         try {
 
             preparedStatement = initialiseRequetePreparee(DBConnection.getConnection(), SQL_INSERT,
-                    oeuvre.getId());
+                    oeuvre.getId(), etatExemplaire);
             int statut = preparedStatement.executeUpdate();
             if (statut == 0) {
                 throw new BibalExceptions("Echec d'ajout de l'exemplaire");
@@ -51,6 +68,41 @@ public class Exemplaire {
 
         } catch (SQLException | BibalExceptions e) {
             throw new BibalExceptions("Erreurs lors de l'ajout de l'exemplaire " + e.getMessage(), e.getCause());
+        } finally {
+            closeStatement(preparedStatement);
+        }
+    }
+
+    public void modifier(Exemplaire exemplaire) throws BibalExceptions {
+        final String SQL_UPDATE = "UPDATE exemplaire "
+                + " SET etat = ? WHERE id = ?";
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = initialiseRequetePreparee(DBConnection.getConnection(), SQL_UPDATE,
+                    exemplaire.getEtat(), exemplaire.getId());
+            int statut = preparedStatement.executeUpdate();
+            if (statut == 0) {
+                throw new BibalExceptions("Echec de la mise à jour de l'exemplaire");
+            }
+        } catch (SQLException e) {
+            throw new BibalExceptions("Erreurs lors de la mise à jour de l'exemplaire ", e.getCause());
+        } finally {
+            closeStatement(preparedStatement);
+        }
+    }
+
+    public void delete(Exemplaire exemplaire) throws BibalExceptions {
+        final String SQL_DELETE_BY_ID = "DELETE FROM exemplaire WHERE id = ? ";
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = initialiseRequetePreparee(DBConnection.getConnection(), SQL_DELETE_BY_ID,
+                    exemplaire.getId());
+            int statut = preparedStatement.executeUpdate();
+            if (statut == 0) {
+                throw new BibalExceptions("Echec de la suppression de l'exemplaire");
+            }
+        } catch (SQLException | BibalExceptions e) {
+            throw new BibalExceptions("Erreurs lors de la suppression de l'exemplaire ", e.getCause());
         } finally {
             closeStatement(preparedStatement);
         }
@@ -70,15 +122,43 @@ public class Exemplaire {
         return exemplaires.isEmpty() ? null : exemplaires.get(0);
     }
 
+    /**
+     * Trouver les exemplaires disponibles d'une oeuvre C'est-à-dire les
+     * exempalaires rendus ou non encore empruntés
+     *
+     * @param oeuvre l'oeuvre
+     * @return Un ArrayList des Exemplaires
+     * @throws BibalExceptions
+     */
     public ArrayList<Exemplaire> findExemplaireDispo(Oeuvre oeuvre) throws BibalExceptions {
         final String SQL_SELECT_BY_ID_IDOEUVRE = " SELECT e.*, o.Titre, o.Auteur"
                 + " FROM exemplaire e, oeuvre o"
                 + " WHERE e.OeuvreID = o.id"
                 + " AND e.OeuvreID = ?"
-                + " AND e.id NOT IN (SELECT ExemplaireId FROM emprunt \n"
+                + " AND e.id NOT IN (SELECT ExemplaireId FROM emprunt "
                 + "              WHERE DateRetourEffective IS NULL )";
         ArrayList<Exemplaire> exemplaires = find(SQL_SELECT_BY_ID_IDOEUVRE, oeuvre.getId());
         return exemplaires.isEmpty() ? null : exemplaires;
+    }
+
+    public ArrayList<Exemplaire> find(Oeuvre oeuvre) throws BibalExceptions {
+        final String SQL_SELECT_BY_ID_IDOEUVRE = " SELECT e.*, o.Titre, o.Auteur"
+                + " FROM exemplaire e, oeuvre o"
+                + " WHERE e.OeuvreID = o.id"
+                + " AND e.OeuvreID = ?";
+        ArrayList<Exemplaire> exemplaires = find(SQL_SELECT_BY_ID_IDOEUVRE, oeuvre.getId());
+        return exemplaires.isEmpty() ? null : exemplaires;
+    }
+
+    public Exemplaire find(Oeuvre oeuvre, int idExemplaire) throws BibalExceptions {
+        final String SQL_SELECT_BY_ID_IDOEUVRE = " SELECT e.*, o.Titre, o.Auteur"
+                + " FROM exemplaire e, oeuvre o"
+                + " WHERE e.OeuvreID = o.id"
+                + " AND e.OeuvreID = ?"
+                + " AND e.id = ?";
+        ArrayList<Exemplaire> exemplaires = find(SQL_SELECT_BY_ID_IDOEUVRE,
+                oeuvre.getId(), idExemplaire);
+        return exemplaires.isEmpty() ? null : exemplaires.get(0);
     }
 
     private ArrayList<Exemplaire> find(String sql, Object... objets) throws BibalExceptions {
@@ -105,6 +185,7 @@ public class Exemplaire {
         Exemplaire exemplaire = new Exemplaire();
         try {
             exemplaire.setId(resultSet.getInt("id"));
+            exemplaire.setEtat(resultSet.getString("etat"));
             exemplaire.oeuvresExamplaire.setId(resultSet.getInt("OeuvreID"));
             exemplaire.oeuvresExamplaire.setTitre(resultSet.getString("Titre"));
             exemplaire.oeuvresExamplaire.setAuteur(resultSet.getString("Auteur"));

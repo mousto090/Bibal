@@ -55,7 +55,7 @@ public class ModelTableau extends AbstractTableModel {
         Object resultat[][] = new Object[data.length - 1][nbCol];
         for (int i = 0; i < data.length; i++) {
             if (i != row) {
-                //copy de toutes les colonne de la ligne
+                //copy de toutes les colonnes de la ligne
                 resultat[nbLigne++] = Arrays.copyOfRange(data[i], 0, nbCol);
             }
         }

@@ -10,6 +10,7 @@ import Utility.DBConnection;
 import Utility.ModelTableau;
 import static Utility.Utility.closeStatementResultSet;
 import static Utility.Utility.initialiseRequetePreparee;
+import static Utility.Utility.showMessageSucces;
 import control.OeuvreControl;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,6 +18,7 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import objets_metiers.Livre;
 import objets_metiers.Magazine;
+import objets_metiers.Oeuvre;
 
 /**
  *
@@ -24,13 +26,13 @@ import objets_metiers.Magazine;
  */
 public class AjoutOeuvre extends javax.swing.JDialog {
 
-    
     public AjoutOeuvre(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        setIdentifiant(); 
+        setIdentifiant();
 
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -246,27 +248,32 @@ public class AjoutOeuvre extends javax.swing.JDialog {
     private void ajouterBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ajouterBoutonActionPerformed
 
         try {
-            int identifiant = Integer.parseInt(identifiantField.getText());
-            String titre = titreField.getText();
-            String auteur = auteurField.getText();
-            String categorie = categorieField.getText();
-            String typeOeuvre = typeOeuvreCombo.getSelectedItem().toString();
-            if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
-                OeuvreControl.ajouter(new Magazine(titre, auteur, categorie));
-            } else {
-                OeuvreControl.ajouter(new Livre(titre, auteur, categorie));
-            }
+            Oeuvre oeuvre = getOeuvreInfos();
+            OeuvreControl.ajouter(oeuvre);
             ((ModelTableau) GestionOeuvresExemplaires.tableListeOeuvre.getModel())
                     .addRow(
-                    new Object[]{identifiant, titre, auteur, categorie, typeOeuvre, 0, 0});
-            JOptionPane.showMessageDialog(null, "Oeuvre ajoutée avec succès", "Informations", JOptionPane.INFORMATION_MESSAGE);
+                            new Object[]{oeuvre.getId(), oeuvre.getTitre(), oeuvre.getAuteur(),
+                                oeuvre.getCategorie(), oeuvre.getClass().getSimpleName(), 0, 0});
             setIdentifiant();
             clearField();
-        } catch (BibalExceptions ex) {
-            ex.printStackTrace();
+            showMessageSucces("Oeuvre ajoutée avec succès");
+        } catch (BibalExceptions e) {
+            System.out.println("IHM.AjoutOeuvre.ajouterBoutonActionPerformed()");
         }
     }//GEN-LAST:event_ajouterBoutonActionPerformed
 
+    private Oeuvre getOeuvreInfos() {
+        int identifiant = Integer.parseInt(identifiantField.getText());
+        String titre = titreField.getText();
+        String auteur = auteurField.getText();
+        String categorie = categorieField.getText();
+        String typeOeuvre = typeOeuvreCombo.getSelectedItem().toString();
+
+        if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
+            return new Magazine(identifiant, titre, auteur, categorie);
+        }
+        return new Livre(identifiant, titre, auteur, categorie);
+    }
     private void annulerBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerBoutonActionPerformed
         this.dispose();
     }//GEN-LAST:event_annulerBoutonActionPerformed

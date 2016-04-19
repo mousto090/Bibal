@@ -13,6 +13,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -148,5 +149,10 @@ public final class Utility {
         //Date date = new Date(dateInMilliseconds);
         return new SimpleDateFormat("dd/MM/yyyy").format(dateInMilliseconds);
         //return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(date);
+    }
+    
+    public static void showMessageSucces(String message){
+        JOptionPane.showMessageDialog(null, message, 
+                "Informations", JOptionPane.INFORMATION_MESSAGE);
     }
 }

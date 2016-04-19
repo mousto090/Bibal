@@ -13,20 +13,20 @@ import static Utility.Utility.closeStatementResultSet;
 import static Utility.Utility.dateToStr;
 import static Utility.Utility.formatDate;
 import static Utility.Utility.initialiseRequetePreparee;
+import static Utility.Utility.showMessageSucces;
 import control.UsagerControl;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import static java.lang.Integer.parseInt;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.JOptionPane;
-import javax.swing.table.TableModel;
 import objets_metiers.Usager;
 
 /**
@@ -250,11 +250,6 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
         civiliteCombo.setFont(new java.awt.Font("Times New Roman", 1, 12)); // NOI18N
         civiliteCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "M", "Mme" }));
         civiliteCombo.setPreferredSize(new java.awt.Dimension(123, 26));
-        civiliteCombo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                civiliteComboActionPerformed(evt);
-            }
-        });
 
         dateNaisPicker.setFormats("dd/MM/yyyy");
         dateNaisPicker.setPreferredSize(new java.awt.Dimension(123, 26));
@@ -336,7 +331,7 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
         ajouterBouton.setText("Ajouter");
         ajouterBouton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ajouterBoutonActionPerformed(evt);
+                ajouter(evt);
             }
         });
 
@@ -447,10 +442,6 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void civiliteComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_civiliteComboActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_civiliteComboActionPerformed
-
     private void annulerBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerBoutonActionPerformed
         clearField();
         modifierBouton.setEnabled(false);
@@ -460,27 +451,6 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
 
     }//GEN-LAST:event_annulerBoutonActionPerformed
 
-    private void ajouterBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ajouterBoutonActionPerformed
-        try {
-            int identifiant = Integer.parseInt(identifiantField.getText());
-            String nom = nomField.getText();
-            String prenom = prenomField.getText();
-            Date dateNais = dateNaisPicker.getDate();
-            String sexe = civiliteCombo.getSelectedItem().toString().equals("M") ? "Masculin" : "Féminin";
-            String adresse = adresseField.getText();
-            String tel = telField.getText().replace("-", "").trim();
-            UsagerControl.ajouter(new Usager(nom, prenom, dateNais, sexe, adresse, tel));
-            JOptionPane.showMessageDialog(null, "Usager ajouté avec succès", "Informations", JOptionPane.INFORMATION_MESSAGE);
-            setIdentifiant();
-            clearField();
-            ((ModelTableau) tableListeUsager.getModel()).addRow(
-                    new Object[]{identifiant, nom, prenom, dateToStr(dateNais), sexe, tel, adresse});
-
-        } catch (BibalExceptions ex) {
-            ex.printStackTrace();
-        }
-    }//GEN-LAST:event_ajouterBoutonActionPerformed
-
     private void retourButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_retourButtonActionPerformed
         Menu m = new Menu();
         this.dispose();
@@ -488,56 +458,39 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
     }//GEN-LAST:event_retourButtonActionPerformed
 
     private void modifierBoutonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifierBoutonActionPerformed
+        
         try {
-            int identifiant = Integer.parseInt(identifiantField.getText());
-            String nom = nomField.getText();
-            String prenom = prenomField.getText();
-            Date dateNais = dateNaisPicker.getDate();
-            String sexe = civiliteCombo.getSelectedItem().toString().equals("M") ? "Masculin" : "Féminin";
-            String adresse = adresseField.getText();
-            String tel = telField.getText().replace("-", "").trim();
-            UsagerControl.modifier(new Usager(identifiant, nom, prenom, dateNais, sexe, adresse, tel));
-            JOptionPane.showMessageDialog(null, "Les modifications ont été enregistrées", "Informations", JOptionPane.INFORMATION_MESSAGE);
+            Usager usager = getUsagerInfos();
+            UsagerControl.modifier(usager);
             setIdentifiant();
             clearField();
             ((ModelTableau) tableListeUsager.getModel()).updateRow(
-                    new Object[]{identifiant, nom, prenom, dateToStr(dateNais), sexe, tel, adresse}, 
+                    new Object[]{usager.getId(), usager.getNom(), usager.getPrenom(),
+                        dateToStr(usager.getDateNais()), usager.getSexe(),
+                        usager.getTel(), usager.getAdresse()},
                     tableListeUsager.getSelectedRow());
-//            ((ModelTableau) tableListeUsager.getModel()).
-//                    fireTableRowsUpdated(tableListeUsager.getSelectedRow(), tableListeUsager.getSelectedRow());
-//            String titre[] = new String[]{"Identifiant", "Nom",
-//                "Prénom", "Date de naissance", "Sexe", "Téléphone", "Adresse"};
-//            final String REQUETE = "SELECT id, nom, prenom, dateNais, sexe, tel, adresse"
-//                    + " FROM usager ORDER BY id DESC LIMIT 10";
-//            fillListeUsager(REQUETE, new Object[0], titre);
-
             modifierBouton.setEnabled(false);
             supprimerButton.setEnabled(false);
             ajouterBouton.setEnabled(true);
-        } catch (BibalExceptions ex) {
-            ex.printStackTrace();
+            showMessageSucces("Les modifications ont été enregistrées");
+        } catch (BibalExceptions e) {
+            System.out.println("IHM.GestionUsager.modifierBoutonActionPerformed()");
         }
     }//GEN-LAST:event_modifierBoutonActionPerformed
 
     private void supprimerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_supprimerButtonActionPerformed
         try {
-            int identifiant = Integer.parseInt(identifiantField.getText());
-            String nom = nomField.getText();
-            String prenom = prenomField.getText();
-            Date dateNais = dateNaisPicker.getDate();
-            String sexe = civiliteCombo.getSelectedItem().toString().equals("M") ? "Masculin" : "Féminin";
-            String adresse = adresseField.getText();
-            String tel = telField.getText().replace("-", "").trim();
-            UsagerControl.supprimer(new Usager(identifiant, nom, prenom, dateNais, sexe, adresse, tel));
-            JOptionPane.showMessageDialog(null, "L'enregistrement a bien été supprimé", "Informations", JOptionPane.INFORMATION_MESSAGE);
+            Usager usager = getUsagerInfos();
+            UsagerControl.supprimer(usager);
+            showMessageSucces("L'enregistrement a bien été supprimé");
             setIdentifiant();
             clearField();
             ((ModelTableau) tableListeUsager.getModel()).removeRow(tableListeUsager.getSelectedRow());
             modifierBouton.setEnabled(false);
             supprimerButton.setEnabled(false);
             ajouterBouton.setEnabled(true);
-        } catch (BibalExceptions ex) {
-            ex.printStackTrace();
+        } catch (BibalExceptions e) {
+            System.out.println("IHM.GestionUsager.supprimerButtonActionPerformed()");
         }
     }//GEN-LAST:event_supprimerButtonActionPerformed
 
@@ -545,14 +498,13 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
         String rechPar = RecherchCombo.getSelectedItem().toString();
         String textARechercher = RecherchField.getText().trim();
         if (textARechercher.length() > 0) {
-            ArrayList<Usager> listUsagers = new ArrayList<>();
+            ArrayList<Usager> listUsagers;
             try {
                 switch (rechPar) {
                     case "Identifiant":
-                        int identifiant = Integer.parseInt(textARechercher);
+                        int identifiant = parseInt(textARechercher);
                         Usager usager = UsagerControl.findById(identifiant);
-                        listUsagers.add(usager);
-                        fillUsagerJtable(listUsagers);
+                        fillUsagerJtable(new ArrayList<Usager>(){{add(usager);}});
                         break;
                     case "Nom":
                         listUsagers = UsagerControl.findByNom(textARechercher);
@@ -566,7 +518,7 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
             } catch (BibalExceptions e) {
                 System.out.println("IHM.GestionUsager.RecherchBoutonActionPerformed() : Erreurs");
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "Identifiant non valide", "Informations", JOptionPane.INFORMATION_MESSAGE);
+                showMessageSucces("Identifiant non valide");
             }
         }
     }//GEN-LAST:event_RecherchBoutonActionPerformed
@@ -587,6 +539,33 @@ public class GestionUsager extends javax.swing.JFrame implements MouseListener {
             RecherchField.setEnabled(true);
         }
     }//GEN-LAST:event_RecherchComboActionPerformed
+
+    private void ajouter(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ajouter
+        try {
+            Usager usager = getUsagerInfos();
+            UsagerControl.ajouter(usager);
+            setIdentifiant();
+            clearField();
+            ((ModelTableau) tableListeUsager.getModel()).addRow(
+                    new Object[]{usager.getId(), usager.getNom(), usager.getPrenom(),
+                        dateToStr(usager.getDateNais()), usager.getSexe(),
+                        usager.getTel(), usager.getAdresse()});
+            showMessageSucces("Usager ajouté avec succès");
+        } catch (BibalExceptions e) {
+            System.out.println("IHM.GestionUsager.ajouterBoutonActionPerformed()");
+        }
+    }//GEN-LAST:event_ajouter
+
+    private Usager getUsagerInfos() {
+        int identifiant = parseInt(identifiantField.getText());
+        String nom = nomField.getText();
+        String prenom = prenomField.getText();
+        Date dateNais = dateNaisPicker.getDate();
+        String sexe = civiliteCombo.getSelectedItem().toString().equals("M") ? "Masculin" : "Féminin";
+        String adresse = adresseField.getText();
+        String tel = telField.getText().replace("-", "").trim();
+        return new Usager(identifiant,nom, prenom, dateNais, sexe, adresse, tel);
+    }
 
     private void fillUsagerJtable(ArrayList<Usager> listUsagers) {
         String titre[] = new String[]{"Identifiant", "Nom",

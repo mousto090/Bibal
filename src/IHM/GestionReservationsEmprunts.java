@@ -5,8 +5,30 @@
  */
 package IHM;
 
+import Utility.BibalExceptions;
+import Utility.DBConnection;
+import Utility.ModelTableau;
+import static Utility.Utility.closeStatementResultSet;
+import static Utility.Utility.initialiseRequetePreparee;
+import control.EmpruntControl;
+import control.ExemplaireControl;
+import control.OeuvreControl;
+import control.ReservationControl;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import objets_metiers.Emprunt;
+import objets_metiers.Exemplaire;
+import objets_metiers.Livre;
+import objets_metiers.Magazine;
+import objets_metiers.Oeuvre;
+import objets_metiers.Reservation;
 
 /**
  *
@@ -14,13 +36,124 @@ import java.awt.Color;
  */
 public class GestionReservationsEmprunts extends javax.swing.JFrame {
 
-    /**
-     * Creates new form NewJFrame
-     */
     public GestionReservationsEmprunts() {
         initComponents();
-//        mainPanel.add(new pannel1());
-//        mainPanel.add(new pannel2());
+        setIdentifiant();
+        tableExemplaires.setModel(new ModelTableau(new Object[0][0],
+                new String[]{"ID", "Etat"}));
+        tableExemplaires.setRowHeight(30);
+
+        tableEmpCours.setModel(new ModelTableau(new Object[0][0],
+                new String[]{"ID", "Exemplaire", "Usager",
+                    "Date Emprunt", "Date Retour"}));
+        tableEmpCours.setRowHeight(30);
+
+        tableResaCours.setModel(new ModelTableau(new Object[0][0],
+                new String[]{"ID", "Oeuvre", "Usager",
+                    "Date Réservation"}));
+        tableResaCours.setRowHeight(30);
+
+        tableExemplaires.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                int row = tableExemplaires.getSelectedRow();
+                int nbreCol = tableExemplaires.getColumnCount();
+
+                dataLigneSelectedExemplaires = new Object[nbreCol];
+                if (row >= 0) {
+                    for (int i = 0; i < nbreCol; i++) {
+                        dataLigneSelectedExemplaires[i] = tableExemplaires.getModel().getValueAt(row, i);
+                    }
+                    emprunterButton.setEnabled(true);
+                } else {
+                    emprunterButton.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+
+        tableEmpCours.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                int row = tableEmpCours.getSelectedRow();
+                int nbreCol = tableEmpCours.getColumnCount();
+
+                dataLigneSelectedEmprunts = new Object[nbreCol];
+                if (row >= 0) {
+                    for (int i = 0; i < nbreCol; i++) {
+                        dataLigneSelectedEmprunts[i] = tableEmpCours.getModel().getValueAt(row, i);
+                    }
+                    rendreButton.setEnabled(true);
+                } else {
+                    rendreButton.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+
+        tableResaCours.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                int row = tableResaCours.getSelectedRow();
+                int nbreCol = tableResaCours.getColumnCount();
+
+                dataLigneSelectedReservations = new Object[nbreCol];
+                if (row >= 0) {
+                    for (int i = 0; i < nbreCol; i++) {
+                        dataLigneSelectedReservations[i] = tableResaCours.getModel().getValueAt(row, i);
+                    }
+                    annulerResaButton.setEnabled(true);
+                } else {
+                    annulerResaButton.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
     }
 
     /**
@@ -67,16 +200,17 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
         titreLabel1 = new javax.swing.JLabel();
         categorieLabel1 = new javax.swing.JLabel();
         nbExemplaire1 = new javax.swing.JLabel();
-        identifiantLabelValue6 = new javax.swing.JLabel();
-        identifiantLabelValue7 = new javax.swing.JLabel();
-        identifiantLabelValue8 = new javax.swing.JLabel();
-        identifiantLabelValue9 = new javax.swing.JLabel();
-        identifiantLabelValue10 = new javax.swing.JLabel();
-        identifiantLabelValue11 = new javax.swing.JLabel();
+        titreLabelValue = new javax.swing.JLabel();
+        categorieLabelValue = new javax.swing.JLabel();
+        typeOeuvreLabelValue = new javax.swing.JLabel();
+        auteurLabelValue = new javax.swing.JLabel();
+        nbExemplaireLabelValue = new javax.swing.JLabel();
+        identifiantComboBox = new javax.swing.JComboBox<>();
 
         jLabel1.setText("jLabel1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Gestion Réservations et Oeuvres");
         setBackground(new java.awt.Color(255, 255, 255));
         setResizable(false);
 
@@ -88,7 +222,7 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
         EmpruntPanel.setBackground(new java.awt.Color(255, 255, 255));
 
         panEmpCours.setBackground(new java.awt.Color(255, 255, 255));
-        panEmpCours.setBorder(javax.swing.BorderFactory.createTitledBorder("Emprunts en cours"));
+        panEmpCours.setBorder(javax.swing.BorderFactory.createTitledBorder("Emprunts en cours des exempalaires de l'oeuvre"));
 
         jScrollPane1.getViewport().setBackground(Color.white);
         jScrollPane1.setBackground(new java.awt.Color(255, 255, 255));
@@ -109,6 +243,7 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tableEmpCours.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tableEmpCours.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tableEmpCours);
 
@@ -122,7 +257,7 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
         );
         panEmpCoursLayout.setVerticalGroup(
             panEmpCoursLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
         );
 
         menuEmpPanel.setBackground(new java.awt.Color(255, 255, 255));
@@ -132,19 +267,41 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
         rendreButton.setText("Rendre");
         rendreButton.setEnabled(false);
         rendreButton.setPreferredSize(new java.awt.Dimension(95, 31));
+        rendreButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rendreButtonActionPerformed(evt);
+            }
+        });
 
         emprunterButton.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         emprunterButton.setText("Emprunter");
         emprunterButton.setEnabled(false);
         emprunterButton.setPreferredSize(new java.awt.Dimension(95, 31));
+        emprunterButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                emprunterButtonActionPerformed(evt);
+            }
+        });
 
         affEmpButton.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         affEmpButton.setText("Afficher emprunts");
+        affEmpButton.setEnabled(false);
         affEmpButton.setPreferredSize(new java.awt.Dimension(95, 31));
+        affEmpButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                affEmpButtonActionPerformed(evt);
+            }
+        });
 
         affExempButton.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         affExempButton.setText("Afficher exemplaires");
+        affExempButton.setEnabled(false);
         affExempButton.setPreferredSize(new java.awt.Dimension(95, 31));
+        affExempButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                affExempButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout menuEmpPanelLayout = new javax.swing.GroupLayout(menuEmpPanel);
         menuEmpPanel.setLayout(menuEmpPanelLayout);
@@ -176,7 +333,7 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
         );
 
         panExemplaires.setBackground(new java.awt.Color(255, 255, 255));
-        panExemplaires.setBorder(javax.swing.BorderFactory.createTitledBorder("Exemplaires"));
+        panExemplaires.setBorder(javax.swing.BorderFactory.createTitledBorder("Exemplaires Disponibles"));
 
         jScrollPane2.getViewport().setBackground(Color.white);
         jScrollPane2.setBackground(new java.awt.Color(255, 255, 255));
@@ -197,6 +354,7 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tableExemplaires.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tableExemplaires.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(tableExemplaires);
 
@@ -254,11 +412,11 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Exemplaire", "Usager", "Date emprunt", "Date Retour"
+                "ID", "Oeuvre", "Usager", "Date Reservation"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -278,7 +436,7 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
         );
         panResaCoursLayout.setVerticalGroup(
             panResaCoursLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
+            .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
         );
 
         menuResaPanel.setBackground(new java.awt.Color(255, 255, 255));
@@ -287,15 +445,31 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
         annulerResaButton.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         annulerResaButton.setText("Annuler");
         annulerResaButton.setEnabled(false);
+        annulerResaButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                annulerResaButtonActionPerformed(evt);
+            }
+        });
 
         reserverButton.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         reserverButton.setText("Réserver");
         reserverButton.setEnabled(false);
         reserverButton.setPreferredSize(new java.awt.Dimension(95, 31));
+        reserverButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reserverButtonActionPerformed(evt);
+            }
+        });
 
         affResaButton.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         affResaButton.setText("Afficher ");
+        affResaButton.setEnabled(false);
         affResaButton.setPreferredSize(new java.awt.Dimension(95, 31));
+        affResaButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                affResaButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout menuResaPanelLayout = new javax.swing.GroupLayout(menuResaPanel);
         menuResaPanel.setLayout(menuResaPanelLayout);
@@ -336,7 +510,7 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
         );
         ReservationPanelLayout.setVerticalGroup(
             ReservationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 431, Short.MAX_VALUE)
+            .addGap(0, 414, Short.MAX_VALUE)
             .addGroup(ReservationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(ReservationPanelLayout.createSequentialGroup()
                     .addContainerGap()
@@ -428,23 +602,28 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
         nbExemplaire1.setForeground(new java.awt.Color(0, 0, 255));
         nbExemplaire1.setText("Nombre \nd'exemplaire");
 
-        identifiantLabelValue6.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        identifiantLabelValue6.setText("1");
+        titreLabelValue.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        titreLabelValue.setText(" ");
 
-        identifiantLabelValue7.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        identifiantLabelValue7.setText("1");
+        categorieLabelValue.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        categorieLabelValue.setText(" ");
 
-        identifiantLabelValue8.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        identifiantLabelValue8.setText("1");
+        typeOeuvreLabelValue.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        typeOeuvreLabelValue.setText(" ");
 
-        identifiantLabelValue9.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        identifiantLabelValue9.setText("1");
+        auteurLabelValue.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        auteurLabelValue.setText(" ");
 
-        identifiantLabelValue10.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        identifiantLabelValue10.setText("1");
+        nbExemplaireLabelValue.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        nbExemplaireLabelValue.setText(" ");
 
-        identifiantLabelValue11.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        identifiantLabelValue11.setText("1");
+        identifiantComboBox.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        identifiantComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Choix ID" }));
+        identifiantComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                identifiantComboBoxActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -452,30 +631,30 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(titreLabel1)
-                        .addGap(58, 58, 58)
-                        .addComponent(identifiantLabelValue7))
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(jPanel3Layout.createSequentialGroup()
-                            .addComponent(identifiantLabel1)
+                            .addComponent(titreLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGap(18, 18, 18)
-                            .addComponent(identifiantLabelValue6))
+                            .addComponent(titreLabelValue))
                         .addGroup(jPanel3Layout.createSequentialGroup()
-                            .addComponent(categorieLabel1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(identifiantLabelValue8))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 309, Short.MAX_VALUE)
+                            .addComponent(categorieLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+                            .addGap(18, 18, 18)
+                            .addComponent(categorieLabelValue)))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(identifiantLabel1)
+                        .addGap(18, 18, 18)
+                        .addComponent(identifiantComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 181, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(typeOeuvreLabel1)
                     .addComponent(nbExemplaire1)
                     .addComponent(auteurLabel1))
                 .addGap(30, 30, 30)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(identifiantLabelValue10)
-                    .addComponent(identifiantLabelValue11)
-                    .addComponent(identifiantLabelValue9))
+                    .addComponent(auteurLabelValue)
+                    .addComponent(nbExemplaireLabelValue)
+                    .addComponent(typeOeuvreLabelValue))
                 .addGap(195, 195, 195))
         );
         jPanel3Layout.setVerticalGroup(
@@ -485,20 +664,19 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(typeOeuvreLabel1)
                     .addComponent(identifiantLabel1)
-                    .addComponent(identifiantLabelValue6)
-                    .addComponent(identifiantLabelValue9))
+                    .addComponent(typeOeuvreLabelValue)
+                    .addComponent(identifiantComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(titreLabel1)
-                    .addComponent(identifiantLabelValue7)
+                    .addComponent(titreLabelValue)
                     .addComponent(auteurLabel1)
-                    .addComponent(identifiantLabelValue10))
+                    .addComponent(auteurLabelValue))
                 .addGap(30, 30, 30)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(identifiantLabelValue8)
-                        .addComponent(nbExemplaire1)
-                        .addComponent(identifiantLabelValue11))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(categorieLabelValue)
+                    .addComponent(nbExemplaire1)
+                    .addComponent(nbExemplaireLabelValue)
                     .addComponent(categorieLabel1))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -558,13 +736,29 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void ReservationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ReservationButtonActionPerformed
-        CardLayout card = (CardLayout)mainPanel.getLayout();
+        CardLayout card = (CardLayout) mainPanel.getLayout();
         card.show(mainPanel, "panel2");
+        String identitfiant = identifiantComboBox.getSelectedItem().toString();
+        if (!identitfiant.equals("Choix ID")) {
+            reserverButton.setEnabled(true);
+        } else {
+            reserverButton.setEnabled(false);
+        }
+
     }//GEN-LAST:event_ReservationButtonActionPerformed
 
     private void empruntsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_empruntsButtonActionPerformed
-        CardLayout card = (CardLayout)mainPanel.getLayout();
+        CardLayout card = (CardLayout) mainPanel.getLayout();
         card.show(mainPanel, "panel1");
+
+        String identitfiant = identifiantComboBox.getSelectedItem().toString();
+        if (!identitfiant.equals("Choix ID")) {
+            emprunterButton.setEnabled(true);
+        } else {
+            emprunterButton.setEnabled(false);
+            rendreButton.setEnabled(false);
+            annulerResaButton.setEnabled(false);
+        }
     }//GEN-LAST:event_empruntsButtonActionPerformed
 
     private void retourButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_retourButtonActionPerformed
@@ -572,6 +766,302 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
         this.dispose();
         m.setVisible(true);
     }//GEN-LAST:event_retourButtonActionPerformed
+
+    private void affEmpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_affEmpButtonActionPerformed
+        try {
+            String identitfiant = identifiantComboBox.getSelectedItem().toString();
+            if (!identitfiant.equals("Choix ID")) {
+                Oeuvre oeuvre = getOeuvreInfos();
+                ArrayList<Emprunt> listEmprunts = EmpruntControl.findEmprunts(oeuvre);
+                if (null != listEmprunts) {
+                    fillEmpruntsJtable(listEmprunts);
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Aucun emprunt en cours de cette oeuvre trouvé", "Informations",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    String titre[] = new String[]{"ID", "Exemplaire", "Usager",
+                        "Date Emprunt", "Date Retour"};
+                    Object data[][] = new Object[1][titre.length];
+                    ModelTableau model = new ModelTableau(data, titre);
+                    tableEmpCours.setModel(model);
+                    tableEmpCours.setRowHeight(1);
+                }
+            }
+
+        } catch (BibalExceptions ex) {
+            System.out.println("IHM.GestionReservationsEmprunts.affEmpButtonActionPerformed()");
+        }
+    }//GEN-LAST:event_affEmpButtonActionPerformed
+
+    private void identifiantComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_identifiantComboBoxActionPerformed
+
+        String identitfiant = identifiantComboBox.getSelectedItem().toString();
+        if (!identitfiant.equals("Choix ID")) {
+            try {
+                int id = Integer.parseInt(identitfiant);
+                Oeuvre oeuvre = OeuvreControl.findById(id);
+                titreLabelValue.setText(oeuvre.getTitre());
+                categorieLabelValue.setText(oeuvre.getCategorie());
+                typeOeuvreLabelValue.setText(oeuvre.getClass().getSimpleName());
+                auteurLabelValue.setText(oeuvre.getAuteur());
+                nbExemplaireLabelValue.setText(oeuvre.getExamplairesOeuvre().size() + "");
+            } catch (BibalExceptions ex) {
+                System.out.println("IHM.GestionReservationsEmprunts.identifiantComboBoxActionPerformed()");
+            }
+            affEmpButton.setEnabled(true);
+            affExempButton.setEnabled(true);
+            emprunterButton.setEnabled(true);
+            reserverButton.setEnabled(true);
+            affResaButton.setEnabled(true);
+        } else {
+            titreLabelValue.setText("");
+            categorieLabelValue.setText("");
+            typeOeuvreLabelValue.setText("");
+            auteurLabelValue.setText("");
+            nbExemplaireLabelValue.setText("");
+            affEmpButton.setEnabled(false);
+            affExempButton.setEnabled(false);
+            emprunterButton.setEnabled(false);
+            rendreButton.setEnabled(false);
+            reserverButton.setEnabled(false);
+            affResaButton.setEnabled(false);
+
+        }
+        rendreButton.setEnabled(false);
+        //vider les tables
+        tableExemplaires.setModel(new ModelTableau(new Object[0][0],
+                new String[]{"ID", "Etat"}));
+        tableExemplaires.setRowHeight(30);
+
+        tableEmpCours.setModel(new ModelTableau(new Object[0][0],
+                new String[]{"ID", "Exemplaire", "Usager",
+                    "Date Emprunt", "Date Retour"}));
+        tableResaCours.setRowHeight(30);
+
+        tableResaCours.setModel(new ModelTableau(new Object[0][0],
+                new String[]{"ID", "Oeuvre", "Usager",
+                    "Date Réservation"}));
+        tableResaCours.setRowHeight(30);
+
+    }//GEN-LAST:event_identifiantComboBoxActionPerformed
+
+    private void affExempButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_affExempButtonActionPerformed
+        try {
+            String identitfiant = identifiantComboBox.getSelectedItem().toString();
+            if (!identitfiant.equals("Choix ID")) {
+                Oeuvre oeuvre = getOeuvreInfos();
+                ArrayList<Exemplaire> listExemplaires = ExemplaireControl.findExemplaireDispo(oeuvre);
+                if (null != listExemplaires) {
+                    fillExemplaireJtable(listExemplaires);
+                } else {
+                    String titre[] = new String[]{"ID", "Etat"};
+                    Object data[][] = new Object[1][titre.length];
+                    ModelTableau model = new ModelTableau(data, titre);
+                    tableExemplaires.setModel(model);
+                    tableExemplaires.setRowHeight(1);
+                    JOptionPane.showMessageDialog(null,
+                            "Aucun exemplaire disponible trouvé", "Informations",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+
+        } catch (BibalExceptions ex) {
+            System.out.println("IHM.GestionOeuvre.afficherButtonActionPerformed()");
+        }
+    }//GEN-LAST:event_affExempButtonActionPerformed
+
+    private void rendreButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rendreButtonActionPerformed
+        try {
+            String identitfiant = identifiantComboBox.getSelectedItem().toString();
+            if (!identitfiant.equals("Choix ID")) {
+                int idExemplaire = Integer.parseInt(dataLigneSelectedEmprunts[1].toString());
+                String nom = dataLigneSelectedEmprunts[2].toString();
+                int idOeuvre = Integer.parseInt(identifiantComboBox.getSelectedItem().toString());
+                EmpruntControl.rendre(nom, idOeuvre, idExemplaire);
+                ((ModelTableau) tableEmpCours.getModel()).removeRow(tableEmpCours.getSelectedRow());
+                JOptionPane.showMessageDialog(null,
+                        "Exemplaire Rendu", "Informations",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+            rendreButton.setEnabled(false);
+
+        } catch (BibalExceptions ex) {
+            System.out.println("IHM.GestionReservationsEmprunts.rendreButtonActionPerformed()");
+        }
+    }//GEN-LAST:event_rendreButtonActionPerformed
+
+    private void emprunterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emprunterButtonActionPerformed
+
+        String titre = titreLabelValue.getText();
+        Emprunter emprunter = new Emprunter(this, true, titre);
+        emprunter.setLocationRelativeTo(null);
+        emprunter.setVisible(true);
+    }//GEN-LAST:event_emprunterButtonActionPerformed
+
+    private void affResaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_affResaButtonActionPerformed
+        try {
+            String identitfiant = identifiantComboBox.getSelectedItem().toString();
+            if (!identitfiant.equals("Choix ID")) {
+                Oeuvre oeuvre = getOeuvreInfos();
+                ArrayList<Reservation> listReservations = ReservationControl.findByReservation(oeuvre);
+                if (null != listReservations) {
+                    fillResaJtable(listReservations);
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Aucune réservation en cours de cette oeuvre trouvée", "Informations",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    String titre[] = new String[]{"ID", "Exemplaire", "Usager",
+                        "Date Emprunt", "Date Retour"};
+                    Object data[][] = new Object[1][titre.length];
+                    ModelTableau model = new ModelTableau(data, titre);
+                    tableResaCours.setModel(model);
+                    tableResaCours.setRowHeight(1);
+                }
+            }
+
+        } catch (BibalExceptions ex) {
+            System.out.println("IHM.GestionReservationsEmprunts.affEmpButtonActionPerformed()");
+        }
+    }//GEN-LAST:event_affResaButtonActionPerformed
+
+    private void reserverButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reserverButtonActionPerformed
+        String titre = titreLabelValue.getText();
+        Reserver reserver = new Reserver(this, true, titre);
+        reserver.setLocationRelativeTo(null);
+        reserver.setVisible(true);
+    }//GEN-LAST:event_reserverButtonActionPerformed
+
+    private void annulerResaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerResaButtonActionPerformed
+        try {
+            String identitfiant = identifiantComboBox.getSelectedItem().toString();
+            if (!identitfiant.equals("Choix ID")) {
+                String titreOeuvre = titreLabelValue.getText();
+                int idUsager = Integer.parseInt(dataLigneSelectedReservations[2].toString());
+                ReservationControl.annuler(idUsager, titreOeuvre);
+                ((ModelTableau) tableResaCours.getModel()).removeRow(tableResaCours.getSelectedRow());
+                JOptionPane.showMessageDialog(null,
+                        "Réservation annulée ", "Informations",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+            annulerResaButton.setEnabled(false);
+
+        } catch (BibalExceptions ex) {
+            System.out.println("IHM.GestionReservationsEmprunts.annulerResaButtonActionPerformed()");
+        }
+    }//GEN-LAST:event_annulerResaButtonActionPerformed
+
+    private void fillExemplaireJtable(ArrayList<Exemplaire> listExemplaires) {
+        String titre[] = new String[]{"ID", "Etat"};
+        if (listExemplaires.size() > 0) {
+//            pour le findByID si l'objet ajouté est null
+            int nbLigne = (null == listExemplaires.get(0)) ? 0 : listExemplaires.size();
+            Object data[][] = new Object[nbLigne][titre.length];
+            for (int i = 0; i < nbLigne; i++) {
+                Exemplaire exemplaire = listExemplaires.get(i);
+                data[i][0] = exemplaire.getId();
+                data[i][1] = exemplaire.getEtat();
+            }
+            ModelTableau model = new ModelTableau(data, titre);
+            tableExemplaires.setModel(model);
+            tableExemplaires.setRowHeight(30);
+        } else {
+            //afficher tableau vide
+            Object data[][] = new Object[1][titre.length];
+            ModelTableau model = new ModelTableau(data, titre);
+            tableExemplaires.setModel(model);
+            tableExemplaires.setRowHeight(1);
+        }
+    }
+
+    private void fillEmpruntsJtable(ArrayList<Emprunt> listEmprunts) {
+        String titre[] = new String[]{"ID", "Exemplaire", "Usager",
+            "Date Emprunt", "Date Retour"};
+        if (listEmprunts.size() > 0) {
+//            pour le findByID si l'objet ajouté est null
+            int nbLigne = (null == listEmprunts.get(0)) ? 0 : listEmprunts.size();
+            Object data[][] = new Object[nbLigne][titre.length];
+            for (int i = 0; i < nbLigne; i++) {
+                Emprunt emprunt = listEmprunts.get(i);
+                data[i][0] = emprunt.getId();
+                data[i][1] = emprunt.getExemplairesEmprunt().getId();
+                data[i][2] = emprunt.getUsagerEmprunt().getNom();
+                data[i][3] = emprunt.getDateEmprunt();
+                data[i][4] = emprunt.getDateRetourPrevu();
+
+            }
+            ModelTableau model = new ModelTableau(data, titre);
+            tableEmpCours.setModel(model);
+            tableEmpCours.setRowHeight(30);
+        } else {
+            //afficher tableau vide
+            Object data[][] = new Object[1][titre.length];
+            ModelTableau model = new ModelTableau(data, titre);
+            tableEmpCours.setModel(model);
+            tableEmpCours.setRowHeight(1);
+        }
+    }
+
+    private void fillResaJtable(ArrayList<Reservation> listReservations) {
+        String titre[] = new String[]{"ID", "Oeuvre", "Usager",
+            "Date Réservation"};
+        if (listReservations.size() > 0) {
+            int nbLigne = (null == listReservations.get(0)) ? 0 : listReservations.size();
+            Object data[][] = new Object[nbLigne][titre.length];
+            for (int i = 0; i < nbLigne; i++) {
+                Reservation reservation = listReservations.get(i);
+                data[i][0] = reservation.getId();
+                data[i][1] = reservation.getOeuvresReservation().getId();
+                data[i][2] = reservation.getUsagerReservation().getId();
+                data[i][3] = reservation.getDateReservation();
+
+            }
+            ModelTableau model = new ModelTableau(data, titre);
+            tableResaCours.setModel(model);
+            tableResaCours.setRowHeight(30);
+        } else {
+            //afficher tableau vide
+            Object data[][] = new Object[1][titre.length];
+            ModelTableau model = new ModelTableau(data, titre);
+            tableResaCours.setModel(model);
+            tableResaCours.setRowHeight(1);
+        }
+    }
+
+    private void setIdentifiant() {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            final String SQL_SELECT_ID = "SELECT id FROM oeuvre ";
+            preparedStatement = initialiseRequetePreparee(DBConnection.getConnection(),
+                    SQL_SELECT_ID, new Object[0]);
+            resultSet = preparedStatement.executeQuery();
+            int identifiant;
+            while (resultSet.next()) {
+                identifiant = resultSet.getInt("id");
+                identifiantComboBox.addItem(Integer.toString(identifiant));
+            }
+        } catch (SQLException | BibalExceptions e) {
+            JOptionPane.showMessageDialog(null, "Erreurs d'accès à la base de données",
+                    "Erreurs", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            closeStatementResultSet(preparedStatement, resultSet);
+        }
+    }
+
+    private Oeuvre getOeuvreInfos() {
+        int id = Integer.parseInt(identifiantComboBox.getSelectedItem().toString());
+        String titre = titreLabelValue.getText();
+        String auteur = auteurLabelValue.getText();
+        String categorie = categorieLabelValue.getText();
+        String typeOeuvre = typeOeuvreLabelValue.getText();
+        Oeuvre oeuvre;
+        if (typeOeuvre.equals(Magazine.class.getSimpleName())) {
+            oeuvre = new Magazine(id, titre, auteur, categorie);
+        } else {
+            oeuvre = new Livre(id, titre, auteur, categorie);
+        }
+        return oeuvre;
+    }
 
     /**
      * @param args the command line arguments
@@ -611,6 +1101,9 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
         });
     }
 
+    private Object dataLigneSelectedExemplaires[];
+    private Object dataLigneSelectedEmprunts[];
+    private Object dataLigneSelectedReservations[];
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel EmpruntPanel;
     private javax.swing.JButton ReservationButton;
@@ -620,16 +1113,13 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
     private javax.swing.JButton affResaButton;
     private javax.swing.JButton annulerResaButton;
     private javax.swing.JLabel auteurLabel1;
+    private javax.swing.JLabel auteurLabelValue;
     private javax.swing.JLabel categorieLabel1;
+    private javax.swing.JLabel categorieLabelValue;
     private javax.swing.JButton emprunterButton;
     private javax.swing.JButton empruntsButton;
+    private javax.swing.JComboBox<String> identifiantComboBox;
     private javax.swing.JLabel identifiantLabel1;
-    private javax.swing.JLabel identifiantLabelValue10;
-    private javax.swing.JLabel identifiantLabelValue11;
-    private javax.swing.JLabel identifiantLabelValue6;
-    private javax.swing.JLabel identifiantLabelValue7;
-    private javax.swing.JLabel identifiantLabelValue8;
-    private javax.swing.JLabel identifiantLabelValue9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -641,6 +1131,7 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
     private javax.swing.JPanel menuEmpPanel;
     private javax.swing.JPanel menuResaPanel;
     private javax.swing.JLabel nbExemplaire1;
+    private javax.swing.JLabel nbExemplaireLabelValue;
     private javax.swing.JPanel panEmpCours;
     private javax.swing.JPanel panExemplaires;
     private javax.swing.JPanel panResaCours;
@@ -652,6 +1143,8 @@ public class GestionReservationsEmprunts extends javax.swing.JFrame {
     public static javax.swing.JTable tableResaCours;
     private javax.swing.JLabel titleResaEmpLabel;
     private javax.swing.JLabel titreLabel1;
+    private javax.swing.JLabel titreLabelValue;
     private javax.swing.JLabel typeOeuvreLabel1;
+    private javax.swing.JLabel typeOeuvreLabelValue;
     // End of variables declaration//GEN-END:variables
 }
